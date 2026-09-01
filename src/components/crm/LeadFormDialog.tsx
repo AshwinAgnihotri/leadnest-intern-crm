@@ -1,0 +1,210 @@
+import { useEffect, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  createLead,
+  updateLead,
+  leadsQueryKey,
+  INDUSTRIES,
+  INTERNS,
+  LEAD_QUALITIES,
+  LEAD_SOURCES,
+  LEAD_STATUSES,
+  type Lead,
+  type LeadInput,
+} from "@/lib/crm";
+
+const emptyForm: LeadInput = {
+  company_name: "",
+  contact_person: "",
+  email: "",
+  phone: "",
+  website: "",
+  linkedin: "",
+  location: "",
+  industry: "",
+  lead_source: "",
+  lead_quality: "Cold",
+  status: "New",
+  assigned_intern: "",
+  last_contacted: null,
+  next_follow_up: null,
+};
+
+function validate(form: LeadInput) {
+  const errors: Record<string, string> = {};
+  if (!form.company_name.trim()) errors['company_name'] = "Company name is required";
+  if (!form.contact_person.trim()) errors['contact_person'] = "Contact person is required";
+  if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email))
+    errors['email'] = "Enter a valid email address";
+  if (form.phone && !/^[+]?[\d\s()-]{7,20}$/.test(form.phone))
+    errors['phone'] = "Enter a valid phone number";
+  if (form.website && !/^https?:\/\/.{3,}/.test(form.website))
+    errors['website'] = "Enter a valid URL (https://...)";
+  if (form.linkedin && !/^https?:\/\/.{3,}/.test(form.linkedin))
+    errors['linkedin'] = "Enter a valid URL (https://...)";
+  return errors;
+}
+
+export function LeadFormDialog({
+  open,
+  onOpenChange,
+  lead,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  lead?: Lead | null;
+}) {
+  const [form, setForm] = useState<LeadInput>(emptyForm);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const queryClient = useQueryClient();
+  const isEdit = Boolean(lead);
+
+  useEffect(() => {
+    if (!open) return;
+    setErrors({});
+    if (lead) {
+      const { id, lead_id, created_date, last_updated, ...rest } = lead;
+      void id;
+      void lead_id;
+      void created_date;
+      void last_updated;
+      setForm({ ...emptyForm, ...rest });
+    } else {
+      setForm(emptyForm);
+    }
+  }, [open, lead]);
+
+  const mutation = useMutation({
+    mutationFn: async (payload: LeadInput) => {
+      const clean: Partial<LeadInput> = { ...payload };
+      (Object.keys(clean) as (keyof LeadInput)[]).forEach((k) => {
+        if (clean[k] === "") (clean as Record<string, unknown>)[k] = null;
+      });
+      return lead
+        ? updateLead(lead.id, clean)
+        : createLead(clean as Parameters<typeof createLead>[0]);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      toast.success(isEdit ? "Lead updated successfully" : "Lead added successfully");
+      onOpenChange(false);
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const set = (key: keyof LeadInput, value: string | null) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+  const field = (
+    key: keyof LeadInput,
+    label: string,
+    type = "text",
+    placeholder?: string,
+  ) => (
+    <div className="space-y-1.5">
+      <Label htmlFor={key}>{label}</Label>
+      <Input
+        id={key}
+        type={type}
+        value={(form[key] as string | null) ?? ""}
+        placeholder={placeholder}
+        onChange={(e) => set(key, e.target.value)}
+      />
+      {errors[key] && <p className="text-xs text-destructive">{errors[key]}</p>}
+    </div>
+  );
+
+  const dropdown = (key: keyof LeadInput, label: string, options: string[]) => (
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      <Select
+        {...(form[key] ? { value: form[key] as string } : {})}
+        onValueChange={(v) => set(key, v)}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder={`Select ${label.toLowerCase()}`} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((o) => (
+            <SelectItem key={o} value={o}>
+              {o}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? `Edit ${lead?.lead_id}` : "Add new lead"}</DialogTitle>
+          <DialogDescription>
+            Lead ID, created date and last updated are generated automatically.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form
+          className="space-y-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const found = validate(form);
+            setErrors(found);
+            if (Object.keys(found).length > 0) {
+              toast.error("Please fix the highlighted fields");
+              return;
+            }
+            mutation.mutate(form);
+          }}
+        >
+          <div className="grid gap-4 sm:grid-cols-2">
+            {field("company_name", "Company name *")}
+            {field("contact_person", "Contact person *")}
+            {field("email", "Email", "text", "name@company.com")}
+            {field("phone", "Phone", "text", "+91 98000 00000")}
+            {field("website", "Website", "text", "https://company.com")}
+            {field("linkedin", "LinkedIn", "text", "https://linkedin.com/company/...")}
+            {field("location", "Location", "text", "City, Country")}
+            {dropdown("industry", "Industry", INDUSTRIES)}
+            {dropdown("lead_source", "Lead source", LEAD_SOURCES)}
+            {dropdown("assigned_intern", "Assigned intern", INTERNS)}
+            {dropdown("lead_quality", "Lead quality", LEAD_QUALITIES)}
+            {dropdown("status", "Status", LEAD_STATUSES)}
+            {field("last_contacted", "Last contacted", "date")}
+            {field("next_follow_up", "Next follow-up", "date")}
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              {mutation.isPending ? "Saving..." : "Save lead"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

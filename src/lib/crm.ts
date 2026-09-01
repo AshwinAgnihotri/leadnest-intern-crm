@@ -76,7 +76,9 @@ export async function fetchLeads(): Promise<Lead[]> {
   return (data ?? []) as Lead[];
 }
 
-export async function createLead(input: Partial<LeadInput>): Promise<Lead> {
+export async function createLead(
+  input: Partial<LeadInput> & { company_name: string; contact_person: string },
+): Promise<Lead> {
   const { data, error } = await supabase.from("leads").insert(input).select().single();
   if (error) throw new Error("Failed to create lead");
   return data as Lead;

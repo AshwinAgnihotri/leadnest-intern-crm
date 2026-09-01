@@ -52,16 +52,16 @@ const emptyForm: LeadInput = {
 
 function validate(form: LeadInput) {
   const errors: Record<string, string> = {};
-  if (!form.company_name.trim()) errors.company_name = "Company name is required";
-  if (!form.contact_person.trim()) errors.contact_person = "Contact person is required";
+  if (!form.company_name.trim()) errors['company_name'] = "Company name is required";
+  if (!form.contact_person.trim()) errors['contact_person'] = "Contact person is required";
   if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email))
-    errors.email = "Enter a valid email address";
+    errors['email'] = "Enter a valid email address";
   if (form.phone && !/^[+]?[\d\s()-]{7,20}$/.test(form.phone))
-    errors.phone = "Enter a valid phone number";
+    errors['phone'] = "Enter a valid phone number";
   if (form.website && !/^https?:\/\/.{3,}/.test(form.website))
-    errors.website = "Enter a valid URL (https://...)";
+    errors['website'] = "Enter a valid URL (https://...)";
   if (form.linkedin && !/^https?:\/\/.{3,}/.test(form.linkedin))
-    errors.linkedin = "Enter a valid URL (https://...)";
+    errors['linkedin'] = "Enter a valid URL (https://...)";
   return errors;
 }
 
@@ -100,7 +100,9 @@ export function LeadFormDialog({
       (Object.keys(clean) as (keyof LeadInput)[]).forEach((k) => {
         if (clean[k] === "") (clean as Record<string, unknown>)[k] = null;
       });
-      return lead ? updateLead(lead.id, clean) : createLead(clean);
+      return lead
+        ? updateLead(lead.id, clean)
+        : createLead(clean as Parameters<typeof createLead>[0]);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadsQueryKey });
@@ -136,7 +138,7 @@ export function LeadFormDialog({
     <div className="space-y-1.5">
       <Label>{label}</Label>
       <Select
-        value={(form[key] as string | null) || undefined}
+        {...(form[key] ? { value: form[key] as string } : {})}
         onValueChange={(v) => set(key, v)}
       >
         <SelectTrigger>

@@ -245,7 +245,7 @@ function LeadDetailsPage() {
               <div className="space-y-1.5">
                 <p className="text-sm text-muted-foreground">Assigned intern</p>
                 <Select
-                  value={lead.assigned_intern ?? undefined}
+                  {...(lead.assigned_intern ? { value: lead.assigned_intern } : {})}
                   onValueChange={(v) => fieldMutation.mutate({ assigned_intern: v })}
                 >
                   <SelectTrigger>

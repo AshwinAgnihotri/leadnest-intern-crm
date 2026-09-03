@@ -5,9 +5,18 @@ import { PhoneCall, Plus } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { MarkContactedDialog } from "@/components/crm/MarkContactedDialog";
+import { SortControls } from "@/components/crm/SortControls";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   fetchLeads,
   leadsQueryKey,
@@ -16,6 +25,7 @@ import {
   statusClass,
   type Lead,
 } from "@/lib/crm";
+import { sortLeads, type SortField, type SortOrder } from "@/lib/crm-filters";
 
 export const Route = createFileRoute("/follow-ups")({
   head: () => ({
@@ -51,39 +61,58 @@ function FollowUpSection({
           {title} <span className="text-muted-foreground">({leads.length})</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {leads.length === 0 && (
-          <p className="text-sm text-muted-foreground">No follow-ups scheduled</p>
-        )}
-        {leads.map((lead) => (
-          <div
-            key={lead.id}
-            className="flex flex-col gap-3 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div className="min-w-0">
-              <Link
-                to="/leads/$leadId"
-                params={{ leadId: lead.id }}
-                className="text-sm font-semibold hover:underline"
-              >
-                {lead.company_name}
-              </Link>
-              <p className="text-xs text-muted-foreground">
-                {lead.contact_person} · {lead.phone ?? "no phone"} · {lead.email ?? "no email"}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {lead.assigned_intern ?? "Unassigned"} · follow-up {formatDate(lead.next_follow_up)}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className={statusClass(lead.status)}>{lead.status}</span>
-              <Button size="sm" variant="outline" onClick={() => onContact(lead)}>
-                <PhoneCall className="size-4" />
-                Mark as Contacted
-              </Button>
-            </div>
+      <CardContent className="p-0 pb-4">
+        {leads.length === 0 ? (
+          <p className="px-6 text-sm text-muted-foreground">No follow-ups in this bucket</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Company</TableHead>
+                  <TableHead>Contact Person</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Assigned Intern</TableHead>
+                  <TableHead>Next Follow-up</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {leads.map((lead) => (
+                  <TableRow key={lead.id}>
+                    <TableCell className="whitespace-nowrap font-medium">
+                      <Link
+                        to="/leads/$leadId"
+                        params={{ leadId: lead.id }}
+                        className="hover:underline"
+                      >
+                        {lead.company_name}
+                      </Link>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">{lead.contact_person}</TableCell>
+                    <TableCell>
+                      <span className={statusClass(lead.status)}>{lead.status}</span>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {lead.assigned_intern ?? "Unassigned"}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap">
+                      {formatDate(lead.next_follow_up)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-end">
+                        <Button size="sm" variant="outline" onClick={() => onContact(lead)}>
+                          <PhoneCall className="size-4" />
+                          Mark as Contacted
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        ))}
+        )}
       </CardContent>
     </Card>
   );
@@ -91,15 +120,20 @@ function FollowUpSection({
 
 function FollowUpsPage() {
   const [active, setActive] = useState<Lead | null>(null);
+  const [sortField, setSortField] = useState<SortField>("next_follow_up");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
   });
 
   const byBucket = (bucket: string) =>
-    leads
-      .filter((l) => followUpBucket(l) === bucket)
-      .sort((a, b) => (a.next_follow_up! < b.next_follow_up! ? -1 : 1));
+    sortLeads(
+      leads.filter((l) => followUpBucket(l) === bucket),
+      sortField,
+      sortOrder,
+    );
 
   const today = byBucket("today");
   const upcoming = byBucket("upcoming");
@@ -112,6 +146,22 @@ function FollowUpsPage() {
           Failed to load leads. Please refresh the page.
         </p>
       )}
+
+      <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+        <SortControls
+          field={sortField}
+          order={sortOrder}
+          onFieldChange={setSortField}
+          onOrderChange={setSortOrder}
+          fields={[
+            "company_name",
+            "contact_person",
+            "assigned_intern",
+            "next_follow_up",
+            "last_contacted",
+          ]}
+        />
+      </div>
 
       {isLoading ? (
         <Skeleton className="h-64 w-full" />
@@ -129,9 +179,9 @@ function FollowUpsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          <FollowUpSection title="Overdue Follow-ups" leads={overdue} onContact={setActive} />
-          <FollowUpSection title="Today's Follow-ups" leads={today} onContact={setActive} />
-          <FollowUpSection title="Upcoming Follow-ups" leads={upcoming} onContact={setActive} />
+          <FollowUpSection title="Overdue" leads={overdue} onContact={setActive} />
+          <FollowUpSection title="Today" leads={today} onContact={setActive} />
+          <FollowUpSection title="Upcoming" leads={upcoming} onContact={setActive} />
         </div>
       )}
 

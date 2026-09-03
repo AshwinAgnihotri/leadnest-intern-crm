@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   Users,
   Sparkles,
@@ -7,9 +8,11 @@ import {
   CalendarClock,
   BadgeCheck,
   Trophy,
+  XCircle,
 } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
+import { SortControls } from "@/components/crm/SortControls";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -23,8 +26,10 @@ import {
   countBy,
   LEAD_STATUSES,
   LEAD_QUALITIES,
+  LEAD_SOURCES,
   type Lead,
 } from "@/lib/crm";
+import { sortLeads, type SortField, type SortOrder } from "@/lib/crm-filters";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -102,13 +107,25 @@ function DashboardPage() {
     queryFn: fetchLeads,
   });
 
+  const [recentField, setRecentField] = useState<SortField>("created_date");
+  const [recentOrder, setRecentOrder] = useState<SortOrder>("desc");
+  const [followField, setFollowField] = useState<SortField>("next_follow_up");
+  const [followOrder, setFollowOrder] = useState<SortOrder>("asc");
+
   const count = (status: string) => leads.filter((l: Lead) => l.status === status).length;
   const due = leads.filter(isFollowUpDue);
-  const upcoming = leads
-    .filter((l) => l.next_follow_up)
-    .sort((a, b) => (a.next_follow_up! < b.next_follow_up! ? -1 : 1))
-    .slice(0, 5);
-  const recent = leads.slice(0, 5);
+
+  const recent = sortLeads(leads, recentField, recentOrder).slice(0, 5);
+  const upcoming = sortLeads(
+    leads.filter((l) => l.next_follow_up),
+    followField,
+    followOrder,
+  ).slice(0, 5);
+
+  const sourceItems = LEAD_SOURCES.map((s) => ({
+    name: s,
+    value: leads.filter((l) => l.lead_source === s).length,
+  }));
 
   return (
     <CrmLayout title="Dashboard">
@@ -118,22 +135,33 @@ function DashboardPage() {
         </p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <h2 className="mb-3 text-sm font-semibold text-muted-foreground">CRM Overview</h2>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
         <StatCard label="Total Leads" value={leads.length} icon={Users} loading={isLoading} />
         <StatCard label="New Leads" value={count("New")} icon={Sparkles} loading={isLoading} />
         <StatCard label="Contacted" value={count("Contacted")} icon={PhoneCall} loading={isLoading} />
         <StatCard label="Follow-ups Due" value={due.length} icon={CalendarClock} loading={isLoading} />
         <StatCard label="Qualified" value={count("Qualified")} icon={BadgeCheck} loading={isLoading} />
         <StatCard label="Converted" value={count("Converted")} icon={Trophy} loading={isLoading} />
+        <StatCard label="Lost" value={count("Lost")} icon={XCircle} loading={isLoading} />
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <Card>
-          <CardHeader className="flex-row items-center justify-between">
+          <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-base">Recent Leads</CardTitle>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/leads">View all</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <SortControls
+                field={recentField}
+                order={recentOrder}
+                onFieldChange={setRecentField}
+                onOrderChange={setRecentOrder}
+                fields={["company_name", "contact_person", "industry", "location", "assigned_intern", "created_date", "last_updated"]}
+              />
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/leads" search={{ q: "" }}>View all</Link>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {isLoading && <Skeleton className="h-24 w-full" />}
@@ -160,11 +188,20 @@ function DashboardPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex-row items-center justify-between">
+          <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-base">Upcoming Follow-ups</CardTitle>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/follow-ups">Open</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <SortControls
+                field={followField}
+                order={followOrder}
+                onFieldChange={setFollowField}
+                onOrderChange={setFollowOrder}
+                fields={["company_name", "contact_person", "assigned_intern", "next_follow_up"]}
+              />
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/follow-ups">Open</Link>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3">
             {isLoading && <Skeleton className="h-24 w-full" />}
@@ -194,7 +231,7 @@ function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Leads by Status</CardTitle>
+            <CardTitle className="text-base">Status Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <BreakdownList
@@ -206,7 +243,7 @@ function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Leads by Quality</CardTitle>
+            <CardTitle className="text-base">Quality Overview</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {countBy(leads, (l) => l.lead_quality, LEAD_QUALITIES as unknown as string[]).map(
@@ -217,6 +254,15 @@ function DashboardPage() {
                 </div>
               ),
             )}
+          </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-base">Lead Source Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <BreakdownList items={sourceItems} total={leads.length} />
           </CardContent>
         </Card>
       </div>

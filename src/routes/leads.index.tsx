@@ -1,26 +1,19 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Filter, Eye, Pencil, Trash2 } from "lucide-react";
+import { Search, Plus, Eye, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { LeadFormDialog } from "@/components/crm/LeadFormDialog";
+import { LeadFilterBar } from "@/components/crm/LeadFilterBar";
+import { SortControls } from "@/components/crm/SortControls";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +46,16 @@ import {
   LEAD_STATUSES,
   type Lead,
 } from "@/lib/crm";
+import {
+  defaultFilters,
+  matchesFilters,
+  matchesSearch,
+  sortLeads,
+  uniqueValues,
+  type LeadFilters,
+  type SortField,
+  type SortOrder,
+} from "@/lib/crm-filters";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -77,8 +80,6 @@ export const Route = createFileRoute("/leads/")({
   component: LeadsPage,
 });
 
-const ANY = "__any__";
-
 function LeadsPage() {
   const { q } = Route.useSearch();
   const navigate = useNavigate();
@@ -87,13 +88,9 @@ function LeadsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Lead | null>(null);
   const [toDelete, setToDelete] = useState<Lead | null>(null);
-  const [filters, setFilters] = useState({
-    quality: ANY,
-    status: ANY,
-    industry: ANY,
-    intern: ANY,
-    source: ANY,
-  });
+  const [filters, setFilters] = useState<LeadFilters>({ ...defaultFilters });
+  const [sortField, setSortField] = useState<SortField>("created_date");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: leadsQueryKey,
@@ -110,51 +107,15 @@ function LeadsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const term = q.trim().toLowerCase();
-  const filtered = leads.filter((lead) => {
-    const matchesTerm =
-      !term ||
-      [lead.company_name, lead.contact_person, lead.email ?? "", lead.lead_id].some((v) =>
-        v.toLowerCase().includes(term),
-      );
-    const f = filters;
-    return (
-      matchesTerm &&
-      (f.quality === ANY || lead.lead_quality === f.quality) &&
-      (f.status === ANY || lead.status === f.status) &&
-      (f.industry === ANY || lead.industry === f.industry) &&
-      (f.intern === ANY || lead.assigned_intern === f.intern) &&
-      (f.source === ANY || lead.lead_source === f.source)
-    );
-  });
-
-  const activeFilters = Object.values(filters).filter((v) => v !== ANY).length;
-
-  const filterSelect = (
-    key: keyof typeof filters,
-    label: string,
-    options: readonly string[],
-  ) => (
-    <div className="space-y-1.5">
-      <Label>{label}</Label>
-      <Select
-        value={filters[key]}
-        onValueChange={(v) => setFilters((prev) => ({ ...prev, [key]: v }))}
-      >
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ANY}>All</SelectItem>
-          {options.map((o) => (
-            <SelectItem key={o} value={o}>
-              {o}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+  const filtered = sortLeads(
+    leads.filter((lead) => matchesSearch(lead, q) && matchesFilters(lead, filters)),
+    sortField,
+    sortOrder,
   );
+
+  const industryOptions = uniqueValues(leads, "industry", INDUSTRIES);
+  const internOptions = uniqueValues(leads, "assigned_intern", INTERNS);
+  const sourceOptions = uniqueValues(leads, "lead_source", LEAD_SOURCES);
 
   return (
     <CrmLayout title="Leads">
@@ -164,36 +125,28 @@ function LeadsPage() {
           <Input
             value={q}
             onChange={(e) => navigate({ to: "/leads", search: { q: e.target.value } })}
-            placeholder="Search by company, contact, email or lead ID"
+            placeholder="Search leads by ID, company, contact, email, phone, industry, location or intern"
             className="pl-8"
             aria-label="Search leads"
           />
         </div>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline">
-              <Filter className="size-4" />
-              Filter{activeFilters ? ` (${activeFilters})` : ""}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72 space-y-3" align="end">
-            {filterSelect("quality", "Lead quality", LEAD_QUALITIES)}
-            {filterSelect("status", "Status", LEAD_STATUSES)}
-            {filterSelect("industry", "Industry", INDUSTRIES)}
-            {filterSelect("intern", "Assigned intern", INTERNS)}
-            {filterSelect("source", "Lead source", LEAD_SOURCES)}
-            <Button
-              variant="ghost"
-              className="w-full"
-              onClick={() =>
-                setFilters({ quality: ANY, status: ANY, industry: ANY, intern: ANY, source: ANY })
-              }
-            >
-              Clear filters
-            </Button>
-          </PopoverContent>
-        </Popover>
+        <LeadFilterBar
+          filters={filters}
+          onChange={setFilters}
+          industries={industryOptions}
+          interns={internOptions}
+          sources={sourceOptions}
+          statuses={LEAD_STATUSES}
+          qualities={LEAD_QUALITIES}
+        />
+
+        <SortControls
+          field={sortField}
+          order={sortOrder}
+          onFieldChange={setSortField}
+          onOrderChange={setSortOrder}
+        />
 
         <Button
           onClick={() => {

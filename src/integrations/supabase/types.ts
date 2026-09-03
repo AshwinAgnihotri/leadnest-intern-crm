@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      interns: {
+        Row: {
+          created_at: string
+          current_login_status: string
+          current_login_time: string | null
+          department: string | null
+          email: string | null
+          id: string
+          intern_id: string
+          join_date: string
+          last_login: string | null
+          last_logout: string | null
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_login_status?: string
+          current_login_time?: string | null
+          department?: string | null
+          email?: string | null
+          id?: string
+          intern_id?: string
+          join_date?: string
+          last_login?: string | null
+          last_logout?: string | null
+          name: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_login_status?: string
+          current_login_time?: string | null
+          department?: string | null
+          email?: string | null
+          id?: string
+          intern_id?: string
+          join_date?: string
+          last_login?: string | null
+          last_logout?: string | null
+          name?: string
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           assigned_intern: string | null
@@ -23,6 +74,7 @@ export type Database = {
           email: string | null
           id: string
           industry: string | null
+          intern_id: string | null
           last_contacted: string | null
           last_updated: string
           lead_id: string
@@ -43,6 +95,7 @@ export type Database = {
           email?: string | null
           id?: string
           industry?: string | null
+          intern_id?: string | null
           last_contacted?: string | null
           last_updated?: string
           lead_id?: string
@@ -63,6 +116,7 @@ export type Database = {
           email?: string | null
           id?: string
           industry?: string | null
+          intern_id?: string | null
           last_contacted?: string | null
           last_updated?: string
           lead_id?: string
@@ -75,7 +129,15 @@ export type Database = {
           status?: string
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -91,6 +91,10 @@ function LeadDetailsPage() {
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
   });
+  const { data: interns = [] } = useQuery({
+    queryKey: internsQueryKey,
+    queryFn: fetchInterns,
+  });
   const lead = leads.find((l: Lead) => l.id === leadId);
 
   const fieldMutation = useMutation({

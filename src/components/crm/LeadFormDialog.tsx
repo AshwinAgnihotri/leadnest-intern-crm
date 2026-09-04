@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -25,13 +25,13 @@ import {
   updateLead,
   leadsQueryKey,
   INDUSTRIES,
-  INTERNS,
   LEAD_QUALITIES,
   LEAD_SOURCES,
   LEAD_STATUSES,
   type Lead,
   type LeadInput,
 } from "@/lib/crm";
+import { fetchInterns, internsQueryKey } from "@/lib/interns";
 
 const emptyForm: LeadInput = {
   company_name: "",
@@ -46,6 +46,7 @@ const emptyForm: LeadInput = {
   lead_quality: "Cold",
   status: "New",
   assigned_intern: "",
+  intern_id: null,
   last_contacted: null,
   next_follow_up: null,
 };
@@ -78,6 +79,10 @@ export function LeadFormDialog({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const queryClient = useQueryClient();
   const isEdit = Boolean(lead);
+  const { data: interns = [] } = useQuery({
+    queryKey: internsQueryKey,
+    queryFn: fetchInterns,
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -188,7 +193,31 @@ export function LeadFormDialog({
             {field("location", "Location", "text", "City, Country")}
             {dropdown("industry", "Industry", INDUSTRIES)}
             {dropdown("lead_source", "Lead source", LEAD_SOURCES)}
-            {dropdown("assigned_intern", "Assigned intern", INTERNS)}
+            <div className="space-y-1.5">
+              <Label>Assigned intern</Label>
+              <Select
+                {...(form.assigned_intern ? { value: form.assigned_intern } : {})}
+                onValueChange={(v) => {
+                  const match = interns.find((i) => i.name === v);
+                  setForm((prev) => ({
+                    ...prev,
+                    assigned_intern: v,
+                    intern_id: match?.id ?? null,
+                  }));
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select intern" />
+                </SelectTrigger>
+                <SelectContent>
+                  {interns.map((i) => (
+                    <SelectItem key={i.id} value={i.name}>
+                      {i.intern_id} · {i.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             {dropdown("lead_quality", "Lead quality", LEAD_QUALITIES)}
             {dropdown("status", "Status", LEAD_STATUSES)}
             {field("last_contacted", "Last contacted", "date")}

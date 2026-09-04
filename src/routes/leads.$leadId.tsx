@@ -37,9 +37,9 @@ import {
   qualityClass,
   LEAD_STATUSES,
   LEAD_QUALITIES,
-  INTERNS,
   type Lead,
 } from "@/lib/crm";
+import { fetchInterns, internsQueryKey } from "@/lib/interns";
 
 export const Route = createFileRoute("/leads/$leadId")({
   head: () => ({
@@ -90,6 +90,10 @@ function LeadDetailsPage() {
   const { data: leads = [], isLoading } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
+  });
+  const { data: interns = [] } = useQuery({
+    queryKey: internsQueryKey,
+    queryFn: fetchInterns,
   });
   const lead = leads.find((l: Lead) => l.id === leadId);
 
@@ -246,15 +250,20 @@ function LeadDetailsPage() {
                 <p className="text-sm text-muted-foreground">Assigned intern</p>
                 <Select
                   {...(lead.assigned_intern ? { value: lead.assigned_intern } : {})}
-                  onValueChange={(v) => fieldMutation.mutate({ assigned_intern: v })}
+                  onValueChange={(v) =>
+                    fieldMutation.mutate({
+                      assigned_intern: v,
+                      intern_id: interns.find((i) => i.name === v)?.id ?? null,
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Unassigned" />
                   </SelectTrigger>
                   <SelectContent>
-                    {INTERNS.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
+                    {interns.map((i) => (
+                      <SelectItem key={i.id} value={i.name}>
+                        {i.intern_id} · {i.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

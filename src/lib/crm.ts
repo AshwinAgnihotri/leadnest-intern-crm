@@ -57,6 +57,7 @@ export interface Lead {
   lead_quality: string;
   status: string;
   assigned_intern: string | null;
+  intern_id: string | null;
   created_date: string;
   last_updated: string;
   last_contacted: string | null;

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound } from "lucide-react";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/leads", label: "Leads", icon: Users },
   { to: "/follow-ups", label: "Follow-ups", icon: CalendarClock },
+  { to: "/interns", label: "Interns", icon: GraduationCap },
 ] as const;
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

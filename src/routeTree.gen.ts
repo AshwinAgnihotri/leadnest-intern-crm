@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FollowUpsRouteImport } from './routes/follow-ups'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as InternsIndexRouteImport } from './routes/interns.index'
 import { Route as LeadsIndexRouteImport } from './routes/leads.index'
 import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
 
@@ -36,6 +37,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InternsIndexRoute = InternsIndexRouteImport.update({
+  id: '/interns/',
+  path: '/interns/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LeadsIndexRoute = LeadsIndexRouteImport.update({
   id: '/leads/',
   path: '/leads/',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
+  '/interns/': typeof InternsIndexRoute
   '/leads/': typeof LeadsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
+  '/interns': typeof InternsIndexRoute
   '/leads': typeof LeadsIndexRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/settings': typeof SettingsRoute
   '/leads/$leadId': typeof LeadsLeadIdRoute
+  '/interns/': typeof InternsIndexRoute
   '/leads/': typeof LeadsIndexRoute
 }
 export interface FileRouteTypes {
@@ -80,10 +89,17 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/leads/$leadId'
+    | '/interns/'
     | '/leads/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/follow-ups' | '/profile' | '/settings' | '/leads/$leadId' | '/leads'
+    | '/'
+    | '/follow-ups'
+    | '/profile'
+    | '/settings'
+    | '/leads/$leadId'
+    | '/interns'
+    | '/leads'
   id:
     | '__root__'
     | '/'
@@ -91,6 +107,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/settings'
     | '/leads/$leadId'
+    | '/interns/'
     | '/leads/'
   fileRoutesById: FileRoutesById
 }
@@ -100,6 +117,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SettingsRoute: typeof SettingsRoute
   LeadsLeadIdRoute: typeof LeadsLeadIdRoute
+  InternsIndexRoute: typeof InternsIndexRoute
   LeadsIndexRoute: typeof LeadsIndexRoute
 }
 
@@ -133,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/interns/': {
+      id: '/interns/'
+      path: '/interns'
+      fullPath: '/interns/'
+      preLoaderRoute: typeof InternsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/leads/': {
       id: '/leads/'
       path: '/leads'
@@ -156,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SettingsRoute: SettingsRoute,
   LeadsLeadIdRoute: LeadsLeadIdRoute,
+  InternsIndexRoute: InternsIndexRoute,
   LeadsIndexRoute: LeadsIndexRoute,
 }
 export const routeTree = rootRouteImport

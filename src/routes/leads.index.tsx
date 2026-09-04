@@ -40,7 +40,6 @@ import {
   statusClass,
   qualityClass,
   INDUSTRIES,
-  INTERNS,
   LEAD_QUALITIES,
   LEAD_SOURCES,
   LEAD_STATUSES,
@@ -56,6 +55,7 @@ import {
   type SortField,
   type SortOrder,
 } from "@/lib/crm-filters";
+import { fetchInterns, internsQueryKey } from "@/lib/interns";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -97,6 +97,11 @@ function LeadsPage() {
     queryFn: fetchLeads,
   });
 
+  const { data: interns = [] } = useQuery({
+    queryKey: internsQueryKey,
+    queryFn: fetchInterns,
+  });
+
   const removeMutation = useMutation({
     mutationFn: (lead: Lead) => deleteLead(lead.id),
     onSuccess: () => {
@@ -114,7 +119,11 @@ function LeadsPage() {
   );
 
   const industryOptions = uniqueValues(leads, "industry", INDUSTRIES);
-  const internOptions = uniqueValues(leads, "assigned_intern", INTERNS);
+  const internOptions = uniqueValues(
+    leads,
+    "assigned_intern",
+    interns.map((i) => i.name),
+  );
   const sourceOptions = uniqueValues(leads, "lead_source", LEAD_SOURCES);
 
   return (

@@ -30,6 +30,22 @@ import {
   type Lead,
 } from "@/lib/crm";
 import { sortLeads, type SortField, type SortOrder } from "@/lib/crm-filters";
+import {
+  fetchInterns,
+  internsQueryKey,
+  internStats,
+  loginBadgeClass,
+  statusBadgeClass,
+} from "@/lib/interns";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Link as RouterLink } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -107,6 +123,11 @@ function DashboardPage() {
     queryFn: fetchLeads,
   });
 
+  const { data: interns = [] } = useQuery({
+    queryKey: internsQueryKey,
+    queryFn: fetchInterns,
+  });
+
   const [recentField, setRecentField] = useState<SortField>("created_date");
   const [recentOrder, setRecentOrder] = useState<SortOrder>("desc");
   const [followField, setFollowField] = useState<SortField>("next_follow_up");
@@ -121,6 +142,10 @@ function DashboardPage() {
     followField,
     followOrder,
   ).slice(0, 5);
+
+  const internRows = interns
+    .map((intern) => ({ intern, stats: internStats(leads, intern) }))
+    .sort((a, b) => b.stats.assigned - a.stats.assigned);
 
   const sourceItems = LEAD_SOURCES.map((s) => ({
     name: s,
@@ -266,6 +291,98 @@ function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <h2 className="mb-3 mt-8 text-sm font-semibold text-muted-foreground">Intern Overview</h2>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+        <StatCard label="Total Interns" value={interns.length} icon={Users} loading={isLoading} />
+        <StatCard
+          label="Active Interns"
+          value={interns.filter((i) => i.status === "Active").length}
+          icon={BadgeCheck}
+          loading={isLoading}
+        />
+        <StatCard
+          label="Online"
+          value={interns.filter((i) => i.current_login_status === "Online").length}
+          icon={Sparkles}
+          loading={isLoading}
+        />
+        <StatCard
+          label="Offline"
+          value={interns.filter((i) => i.current_login_status !== "Online").length}
+          icon={XCircle}
+          loading={isLoading}
+        />
+        <StatCard
+          label="Leads Assigned"
+          value={internRows.reduce((n, r) => n + r.stats.assigned, 0)}
+          icon={Users}
+          loading={isLoading}
+        />
+        <StatCard
+          label="Leads Contacted"
+          value={internRows.reduce((n, r) => n + r.stats.contacted, 0)}
+          icon={PhoneCall}
+          loading={isLoading}
+        />
+        <StatCard
+          label="Converted"
+          value={internRows.reduce((n, r) => n + r.stats.converted, 0)}
+          icon={Trophy}
+          loading={isLoading}
+        />
+      </div>
+
+      <Card className="mt-4">
+        <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <CardTitle className="text-base">Intern Performance</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <RouterLink to="/interns">View all</RouterLink>
+          </Button>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Intern</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Login</TableHead>
+                  <TableHead className="text-right">Leads Assigned</TableHead>
+                  <TableHead className="text-right">Contacted</TableHead>
+                  <TableHead className="text-right">Converted</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {internRows.map(({ intern, stats }) => (
+                  <TableRow key={intern.id}>
+                    <TableCell className="whitespace-nowrap font-medium">
+                      <RouterLink
+                        to="/interns/$internId"
+                        params={{ internId: intern.id }}
+                        className="underline-offset-2 hover:underline"
+                      >
+                        {intern.intern_id} · {intern.name}
+                      </RouterLink>
+                    </TableCell>
+                    <TableCell>
+                      <span className={statusBadgeClass(intern.status)}>{intern.status}</span>
+                    </TableCell>
+                    <TableCell>
+                      <span className={loginBadgeClass(intern.current_login_status)}>
+                        {intern.current_login_status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">{stats.assigned}</TableCell>
+                    <TableCell className="text-right">{stats.contacted}</TableCell>
+                    <TableCell className="text-right">{stats.converted}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </CrmLayout>
   );
 }

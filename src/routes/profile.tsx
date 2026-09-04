@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchLeads, leadsQueryKey, INTERNS, isFollowUpDue } from "@/lib/crm";
+import { fetchLeads, leadsQueryKey, isFollowUpDue } from "@/lib/crm";
+import { fetchInterns, internsQueryKey, leadsForIntern } from "@/lib/interns";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/profile")({
 
 function ProfilePage() {
   const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: interns = [] } = useQuery({ queryKey: internsQueryKey, queryFn: fetchInterns });
 
   return (
     <CrmLayout title="Intern Profile">
@@ -49,11 +51,11 @@ function ProfilePage() {
             <CardTitle className="text-base">Team workload</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {INTERNS.map((intern) => {
-              const owned = leads.filter((l) => l.assigned_intern === intern);
+            {interns.map((intern) => {
+              const owned = leadsForIntern(leads, intern);
               return (
-                <div key={intern} className="flex items-center justify-between text-sm">
-                  <span>{intern}</span>
+                <div key={intern.id} className="flex items-center justify-between text-sm">
+                  <span>{intern.name}</span>
                   <span className="text-muted-foreground">
                     {owned.length} leads · {owned.filter(isFollowUpDue).length} due
                   </span>

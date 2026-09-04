@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { INTERNS, LEAD_SOURCES, LEAD_STATUSES, LEAD_QUALITIES } from "@/lib/crm";
+import { LEAD_SOURCES, LEAD_STATUSES, LEAD_QUALITIES } from "@/lib/crm";
+import { useQuery } from "@tanstack/react-query";
+import { fetchInterns, internsQueryKey } from "@/lib/interns";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -40,6 +42,10 @@ function List({ title, items }: { title: string; items: string[] }) {
 }
 
 function SettingsPage() {
+  const { data: interns = [] } = useQuery({
+    queryKey: internsQueryKey,
+    queryFn: fetchInterns,
+  });
   return (
     <CrmLayout title="Settings">
       <p className="mb-4 text-sm text-muted-foreground">
@@ -49,7 +55,7 @@ function SettingsPage() {
         <List title="Lead statuses" items={[...LEAD_STATUSES]} />
         <List title="Lead qualities" items={[...LEAD_QUALITIES]} />
         <List title="Lead sources" items={LEAD_SOURCES} />
-        <List title="Interns" items={INTERNS} />
+        <List title="Interns" items={interns.map((i) => `${i.intern_id} · ${i.name}`)} />
       </div>
     </CrmLayout>
   );

@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          action: string
+          activity_id: string
+          created_at: string
+          created_date: string
+          created_time: string
+          description: string | null
+          id: string
+          intern_id: string | null
+          intern_name: string | null
+          lead_id: string | null
+          lead_name: string | null
+        }
+        Insert: {
+          action: string
+          activity_id?: string
+          created_at?: string
+          created_date?: string
+          created_time?: string
+          description?: string | null
+          id?: string
+          intern_id?: string | null
+          intern_name?: string | null
+          lead_id?: string | null
+          lead_name?: string | null
+        }
+        Update: {
+          action?: string
+          activity_id?: string
+          created_at?: string
+          created_date?: string
+          created_time?: string
+          description?: string | null
+          id?: string
+          intern_id?: string | null
+          intern_name?: string | null
+          lead_id?: string | null
+          lead_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activities_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interns: {
         Row: {
           created_at: string
@@ -133,6 +190,123 @@ export type Database = {
           {
             foreignKeyName: "leads_intern_id_fkey"
             columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          created_date: string
+          created_time: string
+          id: string
+          intern_id: string | null
+          lead_id: string
+          note_id: string
+          note_text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          created_date?: string
+          created_time?: string
+          id?: string
+          intern_id?: string | null
+          lead_id: string
+          note_id?: string
+          note_text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          created_date?: string
+          created_time?: string
+          id?: string
+          intern_id?: string | null
+          lead_id?: string
+          note_id?: string
+          note_text?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          created_date: string
+          created_time: string
+          dedupe_key: string | null
+          id: string
+          intern_name: string | null
+          is_read: boolean
+          lead_id: string | null
+          message: string | null
+          notification_id: string
+          title: string
+          type: string
+          user_or_intern_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_date?: string
+          created_time?: string
+          dedupe_key?: string | null
+          id?: string
+          intern_name?: string | null
+          is_read?: boolean
+          lead_id?: string | null
+          message?: string | null
+          notification_id?: string
+          title: string
+          type?: string
+          user_or_intern_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_date?: string
+          created_time?: string
+          dedupe_key?: string | null
+          id?: string
+          intern_name?: string | null
+          is_read?: boolean
+          lead_id?: string | null
+          message?: string | null
+          notification_id?: string
+          title?: string
+          type?: string
+          user_or_intern_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_or_intern_id_fkey"
+            columns: ["user_or_intern_id"]
             isOneToOne: false
             referencedRelation: "interns"
             referencedColumns: ["id"]

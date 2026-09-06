@@ -105,12 +105,50 @@ export function LeadFormDialog({
       (Object.keys(clean) as (keyof LeadInput)[]).forEach((k) => {
         if (clean[k] === "") (clean as Record<string, unknown>)[k] = null;
       });
-      return lead
-        ? updateLead(lead.id, clean)
-        : createLead(clean as Parameters<typeof createLead>[0]);
+      const saved = lead
+        ? await updateLead(lead.id, clean)
+        : await createLead(clean as Parameters<typeof createLead>[0]);
+
+      await logActivity({
+        action: lead ? "Edit Lead" : "Add Lead",
+        description: `${lead ? "Updated" : "Created"} lead ${saved.company_name}`,
+        intern: currentIntern ?? null,
+        lead: saved,
+      });
+
+      const assignedChanged = saved.assigned_intern && saved.assigned_intern !== lead?.assigned_intern;
+      if (assignedChanged) {
+        const owner = interns.find((i) => i.name === saved.assigned_intern);
+        await logActivity({
+          action: "Assign Lead",
+          description: `Assigned ${saved.company_name} to ${saved.assigned_intern}`,
+          intern: currentIntern ?? null,
+          lead: saved,
+        });
+        await notify({
+          title: "New Lead Assigned",
+          message: `${saved.company_name} has been assigned to you.`,
+          type: "Lead",
+          intern: owner ?? null,
+          internName: saved.assigned_intern,
+          lead: saved,
+        });
+      }
+
+      if (saved.next_follow_up && saved.next_follow_up !== lead?.next_follow_up) {
+        await logActivity({
+          action: "Schedule Follow-up",
+          description: `Follow-up for ${saved.company_name} set to ${saved.next_follow_up}`,
+          intern: currentIntern ?? null,
+          lead: saved,
+        });
+      }
+      return saved;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       toast.success(isEdit ? "Lead updated successfully" : "Lead added successfully");
       onOpenChange(false);
     },

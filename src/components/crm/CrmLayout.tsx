@@ -123,10 +123,25 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
           </form>
 
           <div className="ml-auto flex items-center gap-2 sm:ml-3">
+            <NotificationBell />
             <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
-              I1
+              {initials(intern?.name)}
             </div>
-            <span className="hidden text-sm text-muted-foreground lg:inline">Intern 1</span>
+            <Select
+              value={intern?.id ?? ""}
+              onValueChange={(v) => setCurrentInternId(v)}
+            >
+              <SelectTrigger className="hidden w-40 lg:flex" aria-label="Current intern">
+                <SelectValue placeholder="Select intern" />
+              </SelectTrigger>
+              <SelectContent>
+                {interns.map((i) => (
+                  <SelectItem key={i.id} value={i.id}>
+                    {i.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </header>
 

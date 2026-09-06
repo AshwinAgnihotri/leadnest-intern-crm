@@ -56,6 +56,8 @@ import {
   type SortOrder,
 } from "@/lib/crm-filters";
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
+import { activitiesQueryKey, logActivity } from "@/lib/activity";
+import { useCurrentIntern } from "@/lib/current-intern";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -84,6 +86,7 @@ function LeadsPage() {
   const { q } = Route.useSearch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { intern: currentIntern } = useCurrentIntern();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Lead | null>(null);
@@ -103,9 +106,18 @@ function LeadsPage() {
   });
 
   const removeMutation = useMutation({
-    mutationFn: (lead: Lead) => deleteLead(lead.id),
+    mutationFn: async (lead: Lead) => {
+      await logActivity({
+        action: "Delete Lead",
+        description: `Deleted lead ${lead.company_name}`,
+        intern: currentIntern ?? null,
+        lead: { id: lead.id, company_name: lead.company_name },
+      });
+      await deleteLead(lead.id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
       toast.success("Lead deleted successfully");
       setToDelete(null);
     },

@@ -40,6 +40,10 @@ import {
   type Lead,
 } from "@/lib/crm";
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
+import { LeadNotes } from "@/components/crm/LeadNotes";
+import { activitiesQueryKey, logActivity, type ActivityAction } from "@/lib/activity";
+import { notificationsQueryKey, notify } from "@/lib/notifications";
+import { useCurrentIntern } from "@/lib/current-intern";
 
 export const Route = createFileRoute("/leads/$leadId")({
   head: () => ({
@@ -96,20 +100,67 @@ function LeadDetailsPage() {
     queryFn: fetchInterns,
   });
   const lead = leads.find((l: Lead) => l.id === leadId);
+  const { intern: currentIntern } = useCurrentIntern();
 
   const fieldMutation = useMutation({
-    mutationFn: (patch: Partial<Lead>) => updateLead(leadId, patch),
+    mutationFn: async ({
+      patch,
+      action,
+      description,
+      notification,
+    }: {
+      patch: Partial<Lead>;
+      action: ActivityAction;
+      description: string;
+      notification?: { title: string; message: string; internName?: string | null };
+    }) => {
+      const saved = await updateLead(leadId, patch);
+      await logActivity({
+        action,
+        description,
+        intern: currentIntern ?? null,
+        lead: saved,
+      });
+      if (notification) {
+        const target =
+          interns.find((i) => i.name === notification.internName) ??
+          interns.find((i) => i.id === saved.intern_id) ??
+          null;
+        await notify({
+          title: notification.title,
+          message: notification.message,
+          type: action === "Assign Lead" ? "Lead" : "Lead",
+          intern: target,
+          internName: notification.internName ?? saved.assigned_intern,
+          lead: saved,
+        });
+      }
+      return saved;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       toast.success("Lead updated successfully");
     },
     onError: (error: Error) => toast.error(error.message),
   });
 
   const removeMutation = useMutation({
-    mutationFn: () => deleteLead(leadId),
+    mutationFn: async () => {
+      if (lead) {
+        await logActivity({
+          action: "Delete Lead",
+          description: `Deleted lead ${lead.company_name}`,
+          intern: currentIntern ?? null,
+          lead: { id: lead.id, company_name: lead.company_name },
+        });
+      }
+      await deleteLead(leadId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
       toast.success("Lead deleted successfully");
       navigate({ to: "/leads", search: { q: "" } });
     },
@@ -214,7 +265,28 @@ function LeadDetailsPage() {
                 <p className="text-sm text-muted-foreground">Status</p>
                 <Select
                   value={lead.status}
-                  onValueChange={(v) => fieldMutation.mutate({ status: v })}
+                  onValueChange={(v) =>
+                    fieldMutation.mutate({
+                      patch: { status: v },
+                      action: "Change Lead Status",
+                      description: `${lead.company_name} status changed to ${v}`,
+                      ...(v === "Converted" || v === "Lost"
+                        ? {
+                            notification: {
+                              title: v === "Converted" ? "Lead converted" : "Lead marked as lost",
+                              message: `${lead.company_name} is now ${v}.`,
+                              internName: lead.assigned_intern,
+                            },
+                          }
+                        : {
+                            notification: {
+                              title: "Lead status changed",
+                              message: `${lead.company_name} moved to ${v}.`,
+                              internName: lead.assigned_intern,
+                            },
+                          }),
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -232,7 +304,13 @@ function LeadDetailsPage() {
                 <p className="text-sm text-muted-foreground">Lead quality</p>
                 <Select
                   value={lead.lead_quality}
-                  onValueChange={(v) => fieldMutation.mutate({ lead_quality: v })}
+                  onValueChange={(v) =>
+                    fieldMutation.mutate({
+                      patch: { lead_quality: v },
+                      action: "Change Lead Quality",
+                      description: `${lead.company_name} quality changed to ${v}`,
+                    })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -252,8 +330,17 @@ function LeadDetailsPage() {
                   {...(lead.assigned_intern ? { value: lead.assigned_intern } : {})}
                   onValueChange={(v) =>
                     fieldMutation.mutate({
-                      assigned_intern: v,
-                      intern_id: interns.find((i) => i.name === v)?.id ?? null,
+                      patch: {
+                        assigned_intern: v,
+                        intern_id: interns.find((i) => i.name === v)?.id ?? null,
+                      },
+                      action: "Assign Lead",
+                      description: `${lead.company_name} assigned to ${v}`,
+                      notification: {
+                        title: "New Lead Assigned",
+                        message: `${lead.company_name} has been assigned to you.`,
+                        internName: v,
+                      },
                     })
                   }
                 >
@@ -272,6 +359,10 @@ function LeadDetailsPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      <div className="mt-4 grid gap-4">
+        <LeadNotes lead={lead} />
       </div>
 
       <LeadFormDialog open={editOpen} onOpenChange={setEditOpen} lead={lead} />

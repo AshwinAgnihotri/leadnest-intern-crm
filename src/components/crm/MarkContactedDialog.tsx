@@ -14,6 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { leadsQueryKey, todayISO, updateLead, type Lead } from "@/lib/crm";
+import { activitiesQueryKey, logActivity } from "@/lib/activity";
+import { notificationsQueryKey, notify } from "@/lib/notifications";
+import { useCurrentIntern } from "@/lib/current-intern";
 
 export function MarkContactedDialog({
   lead,
@@ -24,6 +27,7 @@ export function MarkContactedDialog({
 }) {
   const [nextFollowUp, setNextFollowUp] = useState("");
   const queryClient = useQueryClient();
+  const { intern: currentIntern } = useCurrentIntern();
 
   useEffect(() => {
     if (lead) setNextFollowUp(lead.next_follow_up ?? "");
@@ -37,9 +41,32 @@ export function MarkContactedDialog({
         next_follow_up: nextFollowUp || null,
         status: lead.status === "New" ? "Contacted" : lead.status,
       });
+      await logActivity({
+        action: "Contact Lead",
+        description: `Contacted ${lead.company_name}`,
+        intern: currentIntern ?? null,
+        lead,
+      });
+      if (nextFollowUp && nextFollowUp !== lead.next_follow_up) {
+        await logActivity({
+          action: "Schedule Follow-up",
+          description: `Follow-up for ${lead.company_name} set to ${nextFollowUp}`,
+          intern: currentIntern ?? null,
+          lead,
+        });
+        await notify({
+          title: "Upcoming follow-up",
+          message: `${lead.company_name} follow-up is scheduled for ${nextFollowUp}.`,
+          type: "Follow-up",
+          intern: currentIntern ?? null,
+          lead,
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       toast.success("Marked as contacted");
       onOpenChange(false);
     },

@@ -1,16 +1,26 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { NotificationBell } from "@/components/crm/NotificationBell";
+import { initials, setCurrentInternId, useCurrentIntern } from "@/lib/current-intern";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/leads", label: "Leads", icon: Users },
   { to: "/follow-ups", label: "Follow-ups", icon: CalendarClock },
   { to: "/interns", label: "Interns", icon: GraduationCap },
+  { to: "/activity", label: "Activity", icon: History },
 ] as const;
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
@@ -68,6 +78,7 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
   const navigate = useNavigate();
+  const { intern, interns } = useCurrentIntern();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -113,10 +124,25 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
           </form>
 
           <div className="ml-auto flex items-center gap-2 sm:ml-3">
+            <NotificationBell />
             <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
-              I1
+              {initials(intern?.name)}
             </div>
-            <span className="hidden text-sm text-muted-foreground lg:inline">Intern 1</span>
+            <Select
+              value={intern?.id ?? ""}
+              onValueChange={(v) => setCurrentInternId(v)}
+            >
+              <SelectTrigger className="hidden w-40 lg:flex" aria-label="Current intern">
+                <SelectValue placeholder="Select intern" />
+              </SelectTrigger>
+              <SelectContent>
+                {interns.map((i) => (
+                  <SelectItem key={i.id} value={i.id}>
+                    {i.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </header>
 

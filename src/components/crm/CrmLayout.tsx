@@ -1,16 +1,26 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { NotificationBell } from "@/components/crm/NotificationBell";
+import { initials, setCurrentInternId, useCurrentIntern } from "@/lib/current-intern";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/leads", label: "Leads", icon: Users },
   { to: "/follow-ups", label: "Follow-ups", icon: CalendarClock },
   { to: "/interns", label: "Interns", icon: GraduationCap },
+  { to: "/activity", label: "Activity", icon: History },
 ] as const;
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

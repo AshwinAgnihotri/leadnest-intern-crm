@@ -78,6 +78,7 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
   const navigate = useNavigate();
+  const { intern, interns } = useCurrentIntern();
 
   return (
     <div className="flex min-h-screen bg-background">

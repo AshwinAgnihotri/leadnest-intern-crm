@@ -32,6 +32,9 @@ import {
   type LeadInput,
 } from "@/lib/crm";
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
+import { activitiesQueryKey, logActivity } from "@/lib/activity";
+import { notificationsQueryKey, notify } from "@/lib/notifications";
+import { useCurrentIntern } from "@/lib/current-intern";
 
 const emptyForm: LeadInput = {
   company_name: "",
@@ -83,6 +86,7 @@ export function LeadFormDialog({
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
   });
+  const { intern: currentIntern } = useCurrentIntern();
 
   useEffect(() => {
     if (!open) return;

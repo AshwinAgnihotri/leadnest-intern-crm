@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signInIntern, signUpIntern } from "@/lib/auth";
+import { signInIntern, signOutIntern, signUpIntern } from "@/lib/auth";
+import { fetchMyProfile } from "@/lib/profile";
+import { cn } from "@/lib/utils";
+
+type SignInTab = "intern" | "admin";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,

@@ -55,7 +55,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 function InternProfilePage() {
-  const { internId } = useParams({ from: "/interns/$internId" });
+  const { internId } = useParams({ from: "/_authenticated/interns/$internId" });
   const [editOpen, setEditOpen] = useState(false);
 
   const { data: interns = [], isLoading } = useQuery({

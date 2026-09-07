@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Lead } from "@/lib/crm";
 import { todayISO } from "@/lib/crm";
 import type { Intern } from "@/lib/interns";
+import { nowParts } from "@/lib/activity";
 
 export const NOTIFICATION_TYPES = [
   "Follow-up",
@@ -60,6 +61,7 @@ export async function notify(input: NotifyInput) {
       intern_name: input.intern?.name ?? input.internName ?? null,
       lead_id: input.lead?.id ?? null,
       dedupe_key: input.dedupeKey ?? null,
+      ...nowParts(),
     });
   } catch {
     /* ignore */
@@ -132,6 +134,7 @@ export async function syncFollowUpNotifications(leads: Lead[], interns: Intern[]
         intern_name: intern?.name ?? lead.assigned_intern ?? null,
         lead_id: lead.id,
         dedupe_key: `followup:${lead.id}:${bucket}:${due}:${today}`,
+        ...nowParts(),
       };
     })
     .filter((r): r is NonNullable<typeof r> => r !== null);

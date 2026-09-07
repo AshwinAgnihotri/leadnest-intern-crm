@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { nowParts } from "@/lib/activity";
 
 export interface Note {
   id: string;
@@ -31,7 +32,11 @@ export async function createNote(input: {
   created_by: string | null;
   intern_id: string | null;
 }): Promise<Note> {
-  const { data, error } = await supabase.from("notes").insert(input).select().single();
+  const { data, error } = await supabase
+    .from("notes")
+    .insert({ ...input, ...nowParts() })
+    .select()
+    .single();
   if (error) throw new Error("Failed to add note");
   return data as Note;
 }

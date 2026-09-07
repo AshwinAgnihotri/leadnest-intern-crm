@@ -77,18 +77,18 @@ export const createAccount = createServerFn({ method: "POST" })
           .maybeSingle();
 
         if (existing) {
-          const patch: Record<string, unknown> = { user_id: userId, name };
+          const patch: Record<string, string> = { user_id: userId, name };
           if (internId) patch['intern_id'] = internId;
           const { data: updated, error } = await supabaseAdmin
             .from("interns")
-            .update(patch)
+            .update(patch as never)
             .eq("id", existing.id)
             .select()
             .single();
           if (error) fail("Could not link the intern record.");
           internUuid = updated.id;
         } else {
-          const insert: Record<string, unknown> = {
+          const insert: Record<string, string> = {
             name,
             email,
             user_id: userId,

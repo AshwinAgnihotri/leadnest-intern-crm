@@ -53,6 +53,14 @@ function AuthPage() {
     try {
       if (mode === "signup") {
         await signUpIntern(email.trim(), password, name.trim());
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          setBusy(false);
+          setError(null);
+          toast.success("Account created — check your email to confirm it, then sign in.");
+          setMode("signin");
+          return;
+        }
         toast.success("Account created");
       } else {
         await signInIntern(email.trim(), password);

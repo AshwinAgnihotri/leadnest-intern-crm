@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut, ShieldCheck } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -11,6 +11,7 @@ import { NotificationBell } from "@/components/crm/NotificationBell";
 import { initials, useCurrentIntern } from "@/lib/current-intern";
 import { signOutIntern } from "@/lib/auth";
 import { useMyProfile } from "@/lib/profile";
+import { useIsAdmin } from "@/lib/admin";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -21,6 +22,7 @@ const navItems = [
 ] as const;
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { isAdmin } = useIsAdmin();
   return (
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="px-5 py-6">
@@ -45,6 +47,17 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             {label}
           </Link>
         ))}
+        {isAdmin && (
+          <Link
+            to="/admin"
+            onClick={onNavigate}
+            activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
+          >
+            <ShieldCheck className="size-4" />
+            Admin Panel
+          </Link>
+        )}
       </nav>
 
       <div className="space-y-1 border-t border-sidebar-border px-3 py-4">

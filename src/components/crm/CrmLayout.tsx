@@ -1,19 +1,16 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { NotificationBell } from "@/components/crm/NotificationBell";
-import { initials, setCurrentInternId, useCurrentIntern } from "@/lib/current-intern";
+import { initials, useCurrentIntern } from "@/lib/current-intern";
+import { signOutIntern } from "@/lib/auth";
+import { useMyProfile } from "@/lib/profile";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },

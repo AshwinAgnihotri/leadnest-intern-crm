@@ -115,13 +115,63 @@ function AuthPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-lg">
-            {mode === "signin" ? "Intern sign in" : "Create intern account"}
+            {mode === "signin"
+              ? tab === "admin"
+                ? "Admin sign in"
+                : "Intern sign in"
+              : "Create intern account"}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Pixel AI Intern CRM — you only ever see the work assigned to your own Intern ID.
+            {mode === "signin" && tab === "admin"
+              ? "Pixel AI Intern CRM — for admin and owner accounts."
+              : "Pixel AI Intern CRM — you only ever see the work assigned to your own Intern ID."}
           </p>
         </CardHeader>
         <CardContent>
+          {mode === "signin" && (
+            <div
+              role="tablist"
+              aria-label="Sign in options"
+              className="mb-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "intern"}
+                onClick={() => {
+                  setTab("intern");
+                  setError(null);
+                }}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  tab === "intern"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <UserRound className="size-4" />
+                Intern Sign In
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "admin"}
+                onClick={() => {
+                  setTab("admin");
+                  setError(null);
+                }}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  tab === "admin"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <ShieldCheck className="size-4" />
+                Admin Sign In
+              </button>
+            </div>
+          )}
           <form className="space-y-4" onSubmit={submit}>
             {mode === "signup" && (
               <div className="space-y-1.5">

@@ -37,6 +37,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [tab, setTab] = useState<SignInTab>("intern");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,11 +67,35 @@ function AuthPage() {
           return;
         }
         toast.success("Account created");
-      } else {
-        await signInIntern(email.trim(), password);
-        toast.success("Signed in");
+        navigate({ to: "/", replace: true });
+        return;
       }
-      navigate({ to: "/", replace: true });
+
+      await signInIntern(email.trim(), password);
+
+      // The profile's stored role is the source of truth — the selected tab
+      // only decides which entrance is appropriate, never the permissions.
+      const profile = await fetchMyProfile();
+      const role = profile?.role ?? "intern";
+      const isStaff = role === "admin" || role === "owner";
+
+      if (tab === "intern" && isStaff) {
+        await signOutIntern();
+        const message = "Please use Admin Sign In for this account.";
+        setError(message);
+        toast.error(message);
+        return;
+      }
+      if (tab === "admin" && !isStaff) {
+        await signOutIntern();
+        const message = "Please use Intern Sign In for this account.";
+        setError(message);
+        toast.error(message);
+        return;
+      }
+
+      toast.success("Signed in");
+      navigate({ to: isStaff ? "/admin" : "/", replace: true });
     } catch (err) {
       const raw = (err as Error).message;
       const message = /invalid login credentials/i.test(raw)

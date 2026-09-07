@@ -367,6 +367,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin_or_owner: { Args: never; Returns: boolean }
       link_current_intern: {
         Args: { p_name?: string }
         Returns: {

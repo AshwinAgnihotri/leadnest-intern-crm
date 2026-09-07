@@ -142,21 +142,22 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
             <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
               {initials(intern?.name)}
             </div>
-            <Select
-              value={intern?.id ?? ""}
-              onValueChange={(v) => setCurrentInternId(v)}
+            <div className="hidden leading-tight lg:block">
+              <p className="text-xs text-muted-foreground">Logged in as</p>
+              <p className="text-sm font-medium text-foreground">
+                {intern?.intern_id ?? "—"}
+                {profile?.role && profile.role !== "intern" ? ` · ${profile.role}` : ""}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Log out"
+              disabled={signingOut}
+              onClick={handleSignOut}
             >
-              <SelectTrigger className="hidden w-40 lg:flex" aria-label="Current intern">
-                <SelectValue placeholder="Select intern" />
-              </SelectTrigger>
-              <SelectContent>
-                {interns.map((i) => (
-                  <SelectItem key={i.id} value={i.id}>
-                    {i.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <LogOut className="size-4" />
+            </Button>
           </div>
         </header>
 

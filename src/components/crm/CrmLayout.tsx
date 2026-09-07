@@ -75,7 +75,24 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
   const navigate = useNavigate();
-  const { intern, interns } = useCurrentIntern();
+  const queryClient = useQueryClient();
+  const { intern } = useCurrentIntern();
+  const { data: profile } = useMyProfile();
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await signOutIntern();
+      navigate({ to: "/auth", replace: true });
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-background">

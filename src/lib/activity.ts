@@ -32,6 +32,16 @@ export interface Activity {
   created_at: string;
 }
 
+/** Local date (yyyy-mm-dd) and time (HH:mm:ss) for stamping new rows. */
+export function nowParts() {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return {
+    created_date: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+    created_time: `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`,
+  };
+}
+
 export const activitiesQueryKey = ["activities"] as const;
 
 export async function fetchActivities(): Promise<Activity[]> {
@@ -61,6 +71,7 @@ export async function logActivity({ action, description, intern, lead }: LogInpu
       intern_name: intern?.name ?? null,
       lead_id: lead?.id ?? null,
       lead_name: lead?.company_name ?? null,
+      ...nowParts(),
     });
   } catch {
     /* ignore logging failures */

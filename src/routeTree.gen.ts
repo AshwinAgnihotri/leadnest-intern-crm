@@ -23,6 +23,8 @@ import { Route as AuthenticatedInternsInternIdRouteImport } from './routes/_auth
 import { Route as AuthenticatedLeadsIndexRouteImport } from './routes/_authenticated/leads.index'
 import { Route as AuthenticatedLeadsLeadIdRouteImport } from './routes/_authenticated/leads.$leadId'
 import { Route as AuthenticatedAdminInternsIndexRouteImport } from './routes/_authenticated/admin.interns.index'
+import { Route as AuthenticatedAdminInternsInternIdRouteImport } from './routes/_authenticated/admin.interns.$internId'
+import { Route as AuthenticatedAdminLeadsIndexRouteImport } from './routes/_authenticated/admin.leads.index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -97,6 +99,18 @@ const AuthenticatedAdminInternsIndexRoute =
     path: '/interns/',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminInternsInternIdRoute =
+  AuthenticatedAdminInternsInternIdRouteImport.update({
+    id: '/interns/$internId',
+    path: '/interns/$internId',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminLeadsIndexRoute =
+  AuthenticatedAdminLeadsIndexRouteImport.update({
+    id: '/leads/',
+    path: '/leads/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -111,7 +125,9 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/interns/': typeof AuthenticatedInternsIndexRoute
   '/leads/': typeof AuthenticatedLeadsIndexRoute
+  '/admin/interns/$internId': typeof AuthenticatedAdminInternsInternIdRoute
   '/admin/interns/': typeof AuthenticatedAdminInternsIndexRoute
+  '/admin/leads/': typeof AuthenticatedAdminLeadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -125,7 +141,9 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/interns': typeof AuthenticatedInternsIndexRoute
   '/leads': typeof AuthenticatedLeadsIndexRoute
+  '/admin/interns/$internId': typeof AuthenticatedAdminInternsInternIdRoute
   '/admin/interns': typeof AuthenticatedAdminInternsIndexRoute
+  '/admin/leads': typeof AuthenticatedAdminLeadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,7 +160,9 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/interns/': typeof AuthenticatedInternsIndexRoute
   '/_authenticated/leads/': typeof AuthenticatedLeadsIndexRoute
+  '/_authenticated/admin/interns/$internId': typeof AuthenticatedAdminInternsInternIdRoute
   '/_authenticated/admin/interns/': typeof AuthenticatedAdminInternsIndexRoute
+  '/_authenticated/admin/leads/': typeof AuthenticatedAdminLeadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -159,7 +179,9 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/interns/'
     | '/leads/'
+    | '/admin/interns/$internId'
     | '/admin/interns/'
+    | '/admin/leads/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -173,7 +195,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/interns'
     | '/leads'
+    | '/admin/interns/$internId'
     | '/admin/interns'
+    | '/admin/leads'
   id:
     | '__root__'
     | '/_authenticated'
@@ -189,7 +213,9 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/interns/'
     | '/_authenticated/leads/'
+    | '/_authenticated/admin/interns/$internId'
     | '/_authenticated/admin/interns/'
+    | '/_authenticated/admin/leads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -297,17 +323,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminInternsIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/interns/$internId': {
+      id: '/_authenticated/admin/interns/$internId'
+      path: '/interns/$internId'
+      fullPath: '/admin/interns/$internId'
+      preLoaderRoute: typeof AuthenticatedAdminInternsInternIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/leads/': {
+      id: '/_authenticated/admin/leads/'
+      path: '/leads'
+      fullPath: '/admin/leads/'
+      preLoaderRoute: typeof AuthenticatedAdminLeadsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminInternsInternIdRoute: typeof AuthenticatedAdminInternsInternIdRoute
   AuthenticatedAdminInternsIndexRoute: typeof AuthenticatedAdminInternsIndexRoute
+  AuthenticatedAdminLeadsIndexRoute: typeof AuthenticatedAdminLeadsIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminInternsInternIdRoute:
+    AuthenticatedAdminInternsInternIdRoute,
   AuthenticatedAdminInternsIndexRoute: AuthenticatedAdminInternsIndexRoute,
+  AuthenticatedAdminLeadsIndexRoute: AuthenticatedAdminLeadsIndexRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =

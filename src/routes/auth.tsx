@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, ShieldCheck, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signInIntern, signUpIntern } from "@/lib/auth";
+import { signInIntern, signOutIntern, signUpIntern } from "@/lib/auth";
+import { fetchMyProfile } from "@/lib/profile";
+import { cn } from "@/lib/utils";
+
+type SignInTab = "intern" | "admin";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -33,6 +37,7 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [tab, setTab] = useState<SignInTab>("intern");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,11 +67,35 @@ function AuthPage() {
           return;
         }
         toast.success("Account created");
-      } else {
-        await signInIntern(email.trim(), password);
-        toast.success("Signed in");
+        navigate({ to: "/", replace: true });
+        return;
       }
-      navigate({ to: "/", replace: true });
+
+      await signInIntern(email.trim(), password);
+
+      // The profile's stored role is the source of truth — the selected tab
+      // only decides which entrance is appropriate, never the permissions.
+      const profile = await fetchMyProfile();
+      const role = profile?.role ?? "intern";
+      const isStaff = role === "admin" || role === "owner";
+
+      if (tab === "intern" && isStaff) {
+        await signOutIntern();
+        const message = "Please use Admin Sign In for this account.";
+        setError(message);
+        toast.error(message);
+        return;
+      }
+      if (tab === "admin" && !isStaff) {
+        await signOutIntern();
+        const message = "Please use Intern Sign In for this account.";
+        setError(message);
+        toast.error(message);
+        return;
+      }
+
+      toast.success("Signed in");
+      navigate({ to: isStaff ? "/admin" : "/", replace: true });
     } catch (err) {
       const raw = (err as Error).message;
       const message = /invalid login credentials/i.test(raw)
@@ -86,13 +115,63 @@ function AuthPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-lg">
-            {mode === "signin" ? "Intern sign in" : "Create intern account"}
+            {mode === "signin"
+              ? tab === "admin"
+                ? "Admin sign in"
+                : "Intern sign in"
+              : "Create intern account"}
           </CardTitle>
           <p className="text-sm text-muted-foreground">
-            Pixel AI Intern CRM — you only ever see the work assigned to your own Intern ID.
+            {mode === "signin" && tab === "admin"
+              ? "Pixel AI Intern CRM — for admin and owner accounts."
+              : "Pixel AI Intern CRM — you only ever see the work assigned to your own Intern ID."}
           </p>
         </CardHeader>
         <CardContent>
+          {mode === "signin" && (
+            <div
+              role="tablist"
+              aria-label="Sign in options"
+              className="mb-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "intern"}
+                onClick={() => {
+                  setTab("intern");
+                  setError(null);
+                }}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  tab === "intern"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <UserRound className="size-4" />
+                Intern Sign In
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={tab === "admin"}
+                onClick={() => {
+                  setTab("admin");
+                  setError(null);
+                }}
+                className={cn(
+                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  tab === "admin"
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <ShieldCheck className="size-4" />
+                Admin Sign In
+              </button>
+            </div>
+          )}
           <form className="space-y-4" onSubmit={submit}>
             {mode === "signup" && (
               <div className="space-y-1.5">

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchLeads, leadsQueryKey, isFollowUpDue } from "@/lib/crm";
 import { fetchInterns, internsQueryKey, leadsForIntern } from "@/lib/interns";
 
-export const Route = createFileRoute("/profile")({
+export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
       { title: "Intern Profile — Pixel AI Intern CRM" },

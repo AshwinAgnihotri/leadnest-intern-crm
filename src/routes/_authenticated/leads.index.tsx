@@ -63,7 +63,7 @@ const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
 });
 
-export const Route = createFileRoute("/leads/")({
+export const Route = createFileRoute("/_authenticated/leads/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [

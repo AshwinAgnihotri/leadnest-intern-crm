@@ -27,7 +27,7 @@ import {
 } from "@/lib/crm";
 import { sortLeads, type SortField, type SortOrder } from "@/lib/crm-filters";
 
-export const Route = createFileRoute("/follow-ups")({
+export const Route = createFileRoute("/_authenticated/follow-ups")({
   head: () => ({
     meta: [
       { title: "Follow-ups — Pixel AI Intern CRM" },

@@ -6,7 +6,7 @@ import { LEAD_SOURCES, LEAD_STATUSES, LEAD_QUALITIES } from "@/lib/crm";
 import { useQuery } from "@tanstack/react-query";
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
 
-export const Route = createFileRoute("/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
     meta: [
       { title: "Settings — Pixel AI Intern CRM" },

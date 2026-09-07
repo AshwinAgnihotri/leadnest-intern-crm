@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/table";
 import { Link as RouterLink } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "Dashboard — Pixel AI Intern CRM" },

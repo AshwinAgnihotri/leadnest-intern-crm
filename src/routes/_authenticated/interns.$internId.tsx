@@ -27,7 +27,7 @@ import {
   formatDateTime,
 } from "@/lib/interns";
 
-export const Route = createFileRoute("/interns/$internId")({
+export const Route = createFileRoute("/_authenticated/interns/$internId")({
   head: () => ({
     meta: [
       { title: "Intern Profile — Pixel AI Intern CRM" },

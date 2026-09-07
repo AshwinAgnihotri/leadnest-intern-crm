@@ -87,6 +87,7 @@ export type Database = {
           phone: string | null
           status: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -103,6 +104,7 @@ export type Database = {
           phone?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -119,6 +121,7 @@ export type Database = {
           phone?: string | null
           status?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -318,7 +321,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_intern_id: { Args: never; Returns: string }
+      link_current_intern: {
+        Args: { p_name?: string }
+        Returns: {
+          created_at: string
+          current_login_status: string
+          current_login_time: string | null
+          department: string | null
+          email: string | null
+          id: string
+          intern_id: string
+          join_date: string
+          last_login: string | null
+          last_logout: string | null
+          name: string
+          phone: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "interns"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never

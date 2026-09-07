@@ -45,7 +45,7 @@ import { activitiesQueryKey, logActivity, type ActivityAction } from "@/lib/acti
 import { notificationsQueryKey, notify } from "@/lib/notifications";
 import { useCurrentIntern } from "@/lib/current-intern";
 
-export const Route = createFileRoute("/leads/$leadId")({
+export const Route = createFileRoute("/_authenticated/leads/$leadId")({
   head: () => ({
     meta: [
       { title: "Lead details — Pixel AI Intern CRM" },

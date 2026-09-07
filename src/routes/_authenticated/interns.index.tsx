@@ -50,7 +50,7 @@ const SORT_OPTIONS = [
 
 type InternSort = (typeof SORT_OPTIONS)[number]["value"];
 
-export const Route = createFileRoute("/interns/")({
+export const Route = createFileRoute("/_authenticated/interns/")({
   head: () => ({
     meta: [
       { title: "Interns — Pixel AI Intern CRM" },

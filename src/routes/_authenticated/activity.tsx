@@ -35,7 +35,7 @@ import {
 import { ANY, DATE_PRESETS, resolveRange, type DatePreset } from "@/lib/crm-filters";
 import { useInterns } from "@/lib/use-interns";
 
-export const Route = createFileRoute("/activity")({
+export const Route = createFileRoute("/_authenticated/activity")({
   head: () => ({
     meta: [
       { title: "Activity Log — Pixel AI Intern CRM" },

@@ -1,19 +1,16 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { NotificationBell } from "@/components/crm/NotificationBell";
-import { initials, setCurrentInternId, useCurrentIntern } from "@/lib/current-intern";
+import { initials, useCurrentIntern } from "@/lib/current-intern";
+import { signOutIntern } from "@/lib/auth";
+import { useMyProfile } from "@/lib/profile";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -78,7 +75,24 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
   const [open, setOpen] = useState(false);
   const [term, setTerm] = useState("");
   const navigate = useNavigate();
-  const { intern, interns } = useCurrentIntern();
+  const queryClient = useQueryClient();
+  const { intern } = useCurrentIntern();
+  const { data: profile } = useMyProfile();
+  const [signingOut, setSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await signOutIntern();
+      navigate({ to: "/auth", replace: true });
+    } catch (error) {
+      toast.error((error as Error).message);
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -128,21 +142,22 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
             <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
               {initials(intern?.name)}
             </div>
-            <Select
-              value={intern?.id ?? ""}
-              onValueChange={(v) => setCurrentInternId(v)}
+            <div className="hidden leading-tight lg:block">
+              <p className="text-xs text-muted-foreground">Logged in as</p>
+              <p className="text-sm font-medium text-foreground">
+                {intern?.intern_id ?? "—"}
+                {profile?.role && profile.role !== "intern" ? ` · ${profile.role}` : ""}
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Log out"
+              disabled={signingOut}
+              onClick={handleSignOut}
             >
-              <SelectTrigger className="hidden w-40 lg:flex" aria-label="Current intern">
-                <SelectValue placeholder="Select intern" />
-              </SelectTrigger>
-              <SelectContent>
-                {interns.map((i) => (
-                  <SelectItem key={i.id} value={i.id}>
-                    {i.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <LogOut className="size-4" />
+            </Button>
           </div>
         </header>
 

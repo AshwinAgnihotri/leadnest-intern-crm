@@ -54,3 +54,9 @@ export function useSession(): { session: Session | null; loading: boolean } {
 
   return { session, loading };
 }
+
+/** Ends the Supabase session and clears any cached CRM data. */
+export async function signOutIntern() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new Error(error.message);
+}

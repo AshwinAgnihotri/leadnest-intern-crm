@@ -9,222 +9,225 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ActivityRouteImport } from './routes/activity'
-import { Route as FollowUpsRouteImport } from './routes/follow-ups'
-import { Route as ProfileRouteImport } from './routes/profile'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as InternsIndexRouteImport } from './routes/interns.index'
-import { Route as InternsInternIdRouteImport } from './routes/interns.$internId'
-import { Route as LeadsIndexRouteImport } from './routes/leads.index'
-import { Route as LeadsLeadIdRouteImport } from './routes/leads.$leadId'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticated/activity'
+import { Route as AuthenticatedFollowUpsRouteImport } from './routes/_authenticated/follow-ups'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedInternsIndexRouteImport } from './routes/_authenticated/interns.index'
+import { Route as AuthenticatedInternsInternIdRouteImport } from './routes/_authenticated/interns.$internId'
+import { Route as AuthenticatedLeadsIndexRouteImport } from './routes/_authenticated/leads.index'
+import { Route as AuthenticatedLeadsLeadIdRouteImport } from './routes/_authenticated/leads.$leadId'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/_authenticated/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ActivityRoute = ActivityRouteImport.update({
-  id: '/activity',
+const AuthenticatedActivityRoute = AuthenticatedActivityRouteImport.update({
+  id: '/_authenticated/activity',
   path: '/activity',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FollowUpsRoute = FollowUpsRouteImport.update({
-  id: '/follow-ups',
+const AuthenticatedFollowUpsRoute = AuthenticatedFollowUpsRouteImport.update({
+  id: '/_authenticated/follow-ups',
   path: '/follow-ups',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProfileRoute = ProfileRouteImport.update({
-  id: '/profile',
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/_authenticated/profile',
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/_authenticated/settings',
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InternsIndexRoute = InternsIndexRouteImport.update({
-  id: '/interns/',
-  path: '/interns/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InternsInternIdRoute = InternsInternIdRouteImport.update({
-  id: '/interns/$internId',
-  path: '/interns/$internId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LeadsIndexRoute = LeadsIndexRouteImport.update({
-  id: '/leads/',
+const AuthenticatedInternsIndexRoute =
+  AuthenticatedInternsIndexRouteImport.update({
+    id: '/_authenticated/interns/',
+    path: '/interns/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedInternsInternIdRoute =
+  AuthenticatedInternsInternIdRouteImport.update({
+    id: '/_authenticated/interns/$internId',
+    path: '/interns/$internId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedLeadsIndexRoute = AuthenticatedLeadsIndexRouteImport.update({
+  id: '/_authenticated/leads/',
   path: '/leads/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LeadsLeadIdRoute = LeadsLeadIdRouteImport.update({
-  id: '/leads/$leadId',
-  path: '/leads/$leadId',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedLeadsLeadIdRoute =
+  AuthenticatedLeadsLeadIdRouteImport.update({
+    id: '/_authenticated/leads/$leadId',
+    path: '/leads/$leadId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/follow-ups': typeof FollowUpsRoute
-  '/profile': typeof ProfileRoute
-  '/settings': typeof SettingsRoute
-  '/interns/$internId': typeof InternsInternIdRoute
-  '/leads/$leadId': typeof LeadsLeadIdRoute
-  '/interns/': typeof InternsIndexRoute
-  '/leads/': typeof LeadsIndexRoute
+  '/activity': typeof AuthenticatedActivityRoute
+  '/follow-ups': typeof AuthenticatedFollowUpsRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/interns/$internId': typeof AuthenticatedInternsInternIdRoute
+  '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
+  '/interns/': typeof AuthenticatedInternsIndexRoute
+  '/leads/': typeof AuthenticatedLeadsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/follow-ups': typeof FollowUpsRoute
-  '/profile': typeof ProfileRoute
-  '/settings': typeof SettingsRoute
-  '/interns/$internId': typeof InternsInternIdRoute
-  '/leads/$leadId': typeof LeadsLeadIdRoute
-  '/interns': typeof InternsIndexRoute
-  '/leads': typeof LeadsIndexRoute
+  '/activity': typeof AuthenticatedActivityRoute
+  '/follow-ups': typeof AuthenticatedFollowUpsRoute
+  '/profile': typeof AuthenticatedProfileRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/interns/$internId': typeof AuthenticatedInternsInternIdRoute
+  '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
+  '/interns': typeof AuthenticatedInternsIndexRoute
+  '/leads': typeof AuthenticatedLeadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/activity': typeof ActivityRoute
-  '/follow-ups': typeof FollowUpsRoute
-  '/profile': typeof ProfileRoute
-  '/settings': typeof SettingsRoute
-  '/interns/$internId': typeof InternsInternIdRoute
-  '/leads/$leadId': typeof LeadsLeadIdRoute
-  '/interns/': typeof InternsIndexRoute
-  '/leads/': typeof LeadsIndexRoute
+  '/_authenticated/activity': typeof AuthenticatedActivityRoute
+  '/_authenticated/follow-ups': typeof AuthenticatedFollowUpsRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/interns/$internId': typeof AuthenticatedInternsInternIdRoute
+  '/_authenticated/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
+  '/_authenticated/interns/': typeof AuthenticatedInternsIndexRoute
+  '/_authenticated/leads/': typeof AuthenticatedLeadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/activity'
     | '/follow-ups'
     | '/profile'
     | '/settings'
+    | '/'
     | '/interns/$internId'
     | '/leads/$leadId'
     | '/interns/'
     | '/leads/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/activity'
     | '/follow-ups'
     | '/profile'
     | '/settings'
+    | '/'
     | '/interns/$internId'
     | '/leads/$leadId'
     | '/interns'
     | '/leads'
   id:
     | '__root__'
-    | '/'
-    | '/activity'
-    | '/follow-ups'
-    | '/profile'
-    | '/settings'
-    | '/interns/$internId'
-    | '/leads/$leadId'
-    | '/interns/'
-    | '/leads/'
+    | '/_authenticated/activity'
+    | '/_authenticated/follow-ups'
+    | '/_authenticated/profile'
+    | '/_authenticated/settings'
+    | '/_authenticated/'
+    | '/_authenticated/interns/$internId'
+    | '/_authenticated/leads/$leadId'
+    | '/_authenticated/interns/'
+    | '/_authenticated/leads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ActivityRoute: typeof ActivityRoute
-  FollowUpsRoute: typeof FollowUpsRoute
-  ProfileRoute: typeof ProfileRoute
-  SettingsRoute: typeof SettingsRoute
-  InternsInternIdRoute: typeof InternsInternIdRoute
-  LeadsLeadIdRoute: typeof LeadsLeadIdRoute
-  InternsIndexRoute: typeof InternsIndexRoute
-  LeadsIndexRoute: typeof LeadsIndexRoute
+  AuthenticatedActivityRoute: typeof AuthenticatedActivityRoute
+  AuthenticatedFollowUpsRoute: typeof AuthenticatedFollowUpsRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedInternsInternIdRoute: typeof AuthenticatedInternsInternIdRoute
+  AuthenticatedLeadsLeadIdRoute: typeof AuthenticatedLeadsLeadIdRoute
+  AuthenticatedInternsIndexRoute: typeof AuthenticatedInternsIndexRoute
+  AuthenticatedLeadsIndexRoute: typeof AuthenticatedLeadsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/activity': {
-      id: '/activity'
+    '/_authenticated/activity': {
+      id: '/_authenticated/activity'
       path: '/activity'
       fullPath: '/activity'
-      preLoaderRoute: typeof ActivityRouteImport
+      preLoaderRoute: typeof AuthenticatedActivityRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/follow-ups': {
-      id: '/follow-ups'
+    '/_authenticated/follow-ups': {
+      id: '/_authenticated/follow-ups'
       path: '/follow-ups'
       fullPath: '/follow-ups'
-      preLoaderRoute: typeof FollowUpsRouteImport
+      preLoaderRoute: typeof AuthenticatedFollowUpsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/profile': {
-      id: '/profile'
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
       path: '/profile'
       fullPath: '/profile'
-      preLoaderRoute: typeof ProfileRouteImport
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/settings': {
-      id: '/settings'
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
       path: '/settings'
       fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/interns/': {
-      id: '/interns/'
+    '/_authenticated/interns/': {
+      id: '/_authenticated/interns/'
       path: '/interns'
       fullPath: '/interns/'
-      preLoaderRoute: typeof InternsIndexRouteImport
+      preLoaderRoute: typeof AuthenticatedInternsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/interns/$internId': {
-      id: '/interns/$internId'
+    '/_authenticated/interns/$internId': {
+      id: '/_authenticated/interns/$internId'
       path: '/interns/$internId'
       fullPath: '/interns/$internId'
-      preLoaderRoute: typeof InternsInternIdRouteImport
+      preLoaderRoute: typeof AuthenticatedInternsInternIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/leads/': {
-      id: '/leads/'
+    '/_authenticated/leads/': {
+      id: '/_authenticated/leads/'
       path: '/leads'
       fullPath: '/leads/'
-      preLoaderRoute: typeof LeadsIndexRouteImport
+      preLoaderRoute: typeof AuthenticatedLeadsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/leads/$leadId': {
-      id: '/leads/$leadId'
+    '/_authenticated/leads/$leadId': {
+      id: '/_authenticated/leads/$leadId'
       path: '/leads/$leadId'
       fullPath: '/leads/$leadId'
-      preLoaderRoute: typeof LeadsLeadIdRouteImport
+      preLoaderRoute: typeof AuthenticatedLeadsLeadIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ActivityRoute: ActivityRoute,
-  FollowUpsRoute: FollowUpsRoute,
-  ProfileRoute: ProfileRoute,
-  SettingsRoute: SettingsRoute,
-  InternsInternIdRoute: InternsInternIdRoute,
-  LeadsLeadIdRoute: LeadsLeadIdRoute,
-  InternsIndexRoute: InternsIndexRoute,
-  LeadsIndexRoute: LeadsIndexRoute,
+  AuthenticatedActivityRoute: AuthenticatedActivityRoute,
+  AuthenticatedFollowUpsRoute: AuthenticatedFollowUpsRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedInternsInternIdRoute: AuthenticatedInternsInternIdRoute,
+  AuthenticatedLeadsLeadIdRoute: AuthenticatedLeadsLeadIdRoute,
+  AuthenticatedInternsIndexRoute: AuthenticatedInternsIndexRoute,
+  AuthenticatedLeadsIndexRoute: AuthenticatedLeadsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

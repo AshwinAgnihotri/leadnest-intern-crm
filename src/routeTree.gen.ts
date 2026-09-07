@@ -25,6 +25,7 @@ import { Route as AuthenticatedLeadsLeadIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminInternsIndexRouteImport } from './routes/_authenticated/admin.interns.index'
 import { Route as AuthenticatedAdminInternsInternIdRouteImport } from './routes/_authenticated/admin.interns.$internId'
 import { Route as AuthenticatedAdminLeadsIndexRouteImport } from './routes/_authenticated/admin.leads.index'
+import { Route as AuthenticatedAdminUsersIndexRouteImport } from './routes/_authenticated/admin.users.index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -111,6 +112,12 @@ const AuthenticatedAdminLeadsIndexRoute =
     path: '/leads/',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminUsersIndexRoute =
+  AuthenticatedAdminUsersIndexRouteImport.update({
+    id: '/users/',
+    path: '/users/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/admin/interns/$internId': typeof AuthenticatedAdminInternsInternIdRoute
   '/admin/interns/': typeof AuthenticatedAdminInternsIndexRoute
   '/admin/leads/': typeof AuthenticatedAdminLeadsIndexRoute
+  '/admin/users/': typeof AuthenticatedAdminUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -144,6 +152,7 @@ export interface FileRoutesByTo {
   '/admin/interns/$internId': typeof AuthenticatedAdminInternsInternIdRoute
   '/admin/interns': typeof AuthenticatedAdminInternsIndexRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsIndexRoute
+  '/admin/users': typeof AuthenticatedAdminUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -163,6 +172,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/interns/$internId': typeof AuthenticatedAdminInternsInternIdRoute
   '/_authenticated/admin/interns/': typeof AuthenticatedAdminInternsIndexRoute
   '/_authenticated/admin/leads/': typeof AuthenticatedAdminLeadsIndexRoute
+  '/_authenticated/admin/users/': typeof AuthenticatedAdminUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/admin/interns/$internId'
     | '/admin/interns/'
     | '/admin/leads/'
+    | '/admin/users/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/admin/interns/$internId'
     | '/admin/interns'
     | '/admin/leads'
+    | '/admin/users'
   id:
     | '__root__'
     | '/_authenticated'
@@ -216,6 +228,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/interns/$internId'
     | '/_authenticated/admin/interns/'
     | '/_authenticated/admin/leads/'
+    | '/_authenticated/admin/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -337,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminLeadsIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/users/': {
+      id: '/_authenticated/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AuthenticatedAdminUsersIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
@@ -345,6 +365,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminInternsInternIdRoute: typeof AuthenticatedAdminInternsInternIdRoute
   AuthenticatedAdminInternsIndexRoute: typeof AuthenticatedAdminInternsIndexRoute
   AuthenticatedAdminLeadsIndexRoute: typeof AuthenticatedAdminLeadsIndexRoute
+  AuthenticatedAdminUsersIndexRoute: typeof AuthenticatedAdminUsersIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
@@ -353,6 +374,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
     AuthenticatedAdminInternsInternIdRoute,
   AuthenticatedAdminInternsIndexRoute: AuthenticatedAdminInternsIndexRoute,
   AuthenticatedAdminLeadsIndexRoute: AuthenticatedAdminLeadsIndexRoute,
+  AuthenticatedAdminUsersIndexRoute: AuthenticatedAdminUsersIndexRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =

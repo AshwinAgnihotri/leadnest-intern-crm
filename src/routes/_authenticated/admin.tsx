@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { ShieldAlert, LayoutDashboard, Users, Table2 } from "lucide-react";
+import { ShieldAlert, LayoutDashboard, Users, Table2, UserCog } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +15,7 @@ const tabs = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/interns", label: "Interns", icon: Users, exact: false },
   { to: "/admin/leads", label: "All Leads", icon: Table2, exact: false },
+  { to: "/admin/users", label: "User Management", icon: UserCog, exact: false },
 ] as const;
 
 function AdminLayout() {

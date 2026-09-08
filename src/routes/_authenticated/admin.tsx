@@ -15,6 +15,7 @@ const tabs = [
   { to: "/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/admin/interns", label: "Interns", icon: Users, exact: false },
   { to: "/admin/leads", label: "All Leads", icon: Table2, exact: false },
+  { to: "/admin/users", label: "User Management", icon: UserCog, exact: false },
 ] as const;
 
 function AdminLayout() {

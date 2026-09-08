@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { ShieldAlert, LayoutDashboard, Users, Table2 } from "lucide-react";
+import { ShieldAlert, LayoutDashboard, Users, Table2, UserCog } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent } from "@/components/ui/card";

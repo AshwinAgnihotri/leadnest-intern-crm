@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Loader2, ShieldCheck, UserRound } from "lucide-react";
+import { Command, Eye, EyeOff, Loader2, ShieldCheck, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -111,28 +111,34 @@ function AuthPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-lg">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,color-mix(in_oklab,var(--primary)_15%,transparent),transparent_30rem)]" />
+      <Card className="crm-page-enter relative w-full max-w-[410px] overflow-hidden border-border/80 bg-card/90 shadow-[var(--shadow-float)]">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+        <CardHeader className="items-center pb-5 pt-8 text-center">
+          <div className="mb-3 flex size-12 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary shadow-[var(--shadow-action)]">
+            <Command className="size-6" />
+          </div>
+          <p className="crm-kicker">Secure workspace</p>
+          <CardTitle className="text-xl">
             {mode === "signin"
               ? tab === "admin"
                 ? "Admin sign in"
                 : "Intern sign in"
               : "Create intern account"}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="max-w-xs text-sm text-muted-foreground">
             {mode === "signin" && tab === "admin"
               ? "Pixel AI Intern CRM — for admin and owner accounts."
               : "Pixel AI Intern CRM — you only ever see the work assigned to your own Intern ID."}
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-8">
           {mode === "signin" && (
             <div
               role="tablist"
               aria-label="Sign in options"
-              className="mb-4 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1"
+              className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/50 p-1"
             >
               <button
                 type="button"
@@ -143,9 +149,9 @@ function AuthPage() {
                   setError(null);
                 }}
                 className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2.5 font-mono text-[0.7rem] font-medium uppercase transition-all",
                   tab === "intern"
-                    ? "bg-card text-foreground shadow-sm"
+                    ? "bg-accent text-primary shadow-sm"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -161,9 +167,9 @@ function AuthPage() {
                   setError(null);
                 }}
                 className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2.5 font-mono text-[0.7rem] font-medium uppercase transition-all",
                   tab === "admin"
-                    ? "bg-card text-foreground shadow-sm"
+                    ? "bg-accent text-primary shadow-sm"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -219,7 +225,7 @@ function AuthPage() {
                 {error}
               </p>
             )}
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" size="lg" className="w-full" disabled={busy}>
               {busy ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="size-4 animate-spin" />

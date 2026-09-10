@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut, ShieldCheck, Command } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -24,12 +24,16 @@ const navItems = [
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const { isAdmin } = useIsAdmin();
   return (
-    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
-      <div className="px-5 py-6">
-        <Link to="/" onClick={onNavigate} className="block">
-          <span className="text-lg font-semibold tracking-tight">Pixel AI</span>
-          <span className="ml-1 text-lg font-light">Intern CRM</span>
-          <p className="mt-1 text-xs text-sidebar-foreground/60">Lead management workspace</p>
+    <div className="flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground backdrop-blur-2xl">
+      <div className="px-4 py-6">
+        <Link to="/" onClick={onNavigate} className="flex items-center gap-3 rounded-xl px-2 py-1">
+          <span className="flex size-10 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary shadow-[var(--shadow-action)]">
+            <Command className="size-5" />
+          </span>
+          <span>
+            <span className="block text-base font-semibold">Pixel AI</span>
+            <span className="block text-[0.68rem] font-medium uppercase text-sidebar-foreground/45">Intern CRM</span>
+          </span>
         </Link>
       </div>
 
@@ -41,7 +45,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             activeOptions={{ exact: to === "/" }}
             activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
+            className="group flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-sidebar-foreground/65 transition-all duration-200 hover:border-sidebar-border hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
           >
             <Icon className="size-4" />
             {label}
@@ -52,7 +56,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             to="/admin"
             onClick={onNavigate}
             activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
+             className="flex items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-sm font-medium text-sidebar-foreground/65 transition-all duration-200 hover:border-sidebar-border hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
           >
             <ShieldCheck className="size-4" />
             Admin Panel
@@ -65,7 +69,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           to="/profile"
           onClick={onNavigate}
           activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/70"
+           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
         >
           <UserRound className="size-4" />
           Intern Profile
@@ -74,7 +78,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           to="/settings"
           onClick={onNavigate}
           activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent/70"
+           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
         >
           <Settings className="size-4" />
           Settings
@@ -108,15 +112,15 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-64 shrink-0 md:block">
-        <div className="fixed inset-y-0 w-64">
+    <div className="flex min-h-screen bg-transparent">
+      <aside className="hidden w-60 shrink-0 md:block">
+        <div className="fixed inset-y-0 w-60">
           <SidebarContent />
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-card/90 px-4 py-3 backdrop-blur md:px-6">
+        <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-border/70 bg-background/75 px-4 backdrop-blur-xl md:px-7">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open navigation">
@@ -129,7 +133,10 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
             </SheetContent>
           </Sheet>
 
-          <h1 className="truncate text-base font-semibold text-foreground md:text-lg">{title}</h1>
+          <div className="min-w-0">
+            <p className="crm-kicker hidden sm:block">Workspace</p>
+            <h1 className="truncate text-base font-semibold text-foreground md:text-lg">{title}</h1>
+          </div>
 
           <form
             className="ml-auto hidden items-center gap-2 sm:flex"
@@ -152,7 +159,7 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
 
           <div className="ml-auto flex items-center gap-2 sm:ml-3">
             <NotificationBell />
-            <div className="flex size-8 items-center justify-center rounded-full bg-accent text-xs font-semibold text-accent-foreground">
+            <div className="flex size-9 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-xs font-semibold text-primary">
               {initials(intern?.name)}
             </div>
             <div className="hidden leading-tight lg:block">
@@ -174,7 +181,7 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
           </div>
         </header>
 
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="crm-page-enter mx-auto w-full max-w-[1680px] flex-1 p-4 md:p-7">{children}</main>
       </div>
     </div>
   );

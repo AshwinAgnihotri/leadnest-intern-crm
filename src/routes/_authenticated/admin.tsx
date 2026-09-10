@@ -52,17 +52,17 @@ function AdminLayout() {
 
   return (
     <CrmLayout title="Admin Panel">
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-border/70 bg-card/55 p-1.5 shadow-[var(--shadow-card)] backdrop-blur-xl">
         {tabs.map(({ to, label, icon: Icon, exact }) => {
           const active = exact ? pathname === to : pathname.startsWith(to);
           return (
             <Link
               key={to}
               to={to}
-              className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all ${
                 active
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground"
+                  ? "border-primary/25 bg-primary/10 text-primary shadow-sm"
+                  : "border-transparent text-muted-foreground hover:bg-accent/60 hover:text-foreground"
               }`}
             >
               <Icon className="size-4" />

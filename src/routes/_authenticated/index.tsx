@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Plus,
   StickyNote,
+  History,
 } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";

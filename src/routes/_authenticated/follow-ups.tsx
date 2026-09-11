@@ -71,7 +71,6 @@ function FollowUpSection({
           <div><CardTitle className="text-base">{title} <span className="text-muted-foreground">({leads.length})</span></CardTitle><p className="mt-1 text-xs text-muted-foreground">{config.label}</p></div>
         </div>
       </CardHeader>
-      </CardHeader>
       <CardContent className="p-0 pb-4">
         {leads.length === 0 ? (
           <p className="px-6 text-sm text-muted-foreground">No follow-ups in this bucket</p>

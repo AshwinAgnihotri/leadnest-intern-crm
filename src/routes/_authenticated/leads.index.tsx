@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Eye, Pencil, Trash2 } from "lucide-react";
+import { Search, Plus, Eye, Pencil, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -58,6 +58,7 @@ import {
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import { activitiesQueryKey, logActivity } from "@/lib/activity";
 import { useCurrentIntern } from "@/lib/current-intern";
+import { EmptyState } from "@/components/crm/EmptyState";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -140,7 +141,7 @@ function LeadsPage() {
 
   return (
     <CrmLayout title="Leads">
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card/55 p-3 shadow-[var(--shadow-card)] backdrop-blur-xl">
         <div className="relative min-w-56 flex-1">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -186,7 +187,7 @@ function LeadsPage() {
         </p>
       )}
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="space-y-2 p-4">
@@ -195,18 +196,20 @@ function LeadsPage() {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 py-16 text-center">
-              <p className="text-sm text-muted-foreground">No leads found</p>
-              <Button
+            <EmptyState
+              icon={Users}
+              title={leads.length === 0 ? "No leads yet" : "No leads match your search"}
+              description={leads.length === 0 ? "Start building your pipeline by adding your first lead." : "Try changing your search or filters."}
+              action={<Button
                 onClick={() => {
                   setEditing(null);
                   setFormOpen(true);
                 }}
               >
                 <Plus className="size-4" />
-                Add Your First Lead
-              </Button>
-            </div>
+                Add lead
+              </Button>}
+            />
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -229,10 +232,12 @@ function LeadsPage() {
                 </TableHeader>
                 <TableBody>
                   {filtered.map((lead) => (
-                    <TableRow key={lead.id}>
+                    <TableRow key={lead.id} className="group">
                       <TableCell className="font-medium">{lead.lead_id}</TableCell>
                       <TableCell className="whitespace-nowrap font-medium">
-                        {lead.company_name}
+                        <Link to="/leads/$leadId" params={{ leadId: lead.id }} className="transition-colors group-hover:text-primary">
+                          {lead.company_name}
+                        </Link>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">{lead.contact_person}</TableCell>
                       <TableCell className="whitespace-nowrap">{lead.email ?? "—"}</TableCell>

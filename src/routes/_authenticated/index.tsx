@@ -9,6 +9,9 @@ import {
   BadgeCheck,
   Trophy,
   XCircle,
+  ArrowRight,
+  Plus,
+  StickyNote,
 } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
@@ -46,6 +49,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link as RouterLink } from "@tanstack/react-router";
+import { useCurrentIntern } from "@/lib/current-intern";
+import { activitiesQueryKey, fetchActivities, formatTime } from "@/lib/activity";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -78,9 +83,10 @@ function StatCard({
   loading: boolean;
 }) {
   return (
-    <Card>
-      <CardContent className="flex items-center gap-4 p-5">
-        <div className="flex size-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+    <Card className="crm-card-interactive overflow-hidden">
+      <CardContent className="relative flex items-center gap-4 p-5">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-primary/70 to-transparent" />
+        <div className="flex size-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
           <Icon className="size-5" />
         </div>
         <div>
@@ -88,7 +94,7 @@ function StatCard({
           {loading ? (
             <Skeleton className="mt-1 h-7 w-10" />
           ) : (
-            <p className="text-2xl font-semibold text-foreground">{value}</p>
+            <p className="text-3xl font-semibold text-foreground">{value}</p>
           )}
         </div>
       </CardContent>
@@ -105,9 +111,9 @@ function BreakdownList({ items, total }: { items: { name: string; value: number 
             <span className="text-foreground">{item.name}</span>
             <span className="text-muted-foreground">{item.value}</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-muted">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
             <div
-              className="h-2 rounded-full bg-primary"
+              className="h-full rounded-full bg-primary transition-[width] duration-500 motion-reduce:transition-none"
               style={{ width: `${total ? (item.value / total) * 100 : 0}%` }}
             />
           </div>
@@ -118,6 +124,7 @@ function BreakdownList({ items, total }: { items: { name: string; value: number 
 }
 
 function DashboardPage() {
+  const { intern } = useCurrentIntern();
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
@@ -126,6 +133,10 @@ function DashboardPage() {
   const { data: interns = [] } = useQuery({
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
+  });
+  const { data: activities = [] } = useQuery({
+    queryKey: activitiesQueryKey,
+    queryFn: fetchActivities,
   });
 
   const [recentField, setRecentField] = useState<SortField>("created_date");
@@ -151,6 +162,9 @@ function DashboardPage() {
     name: s,
     value: leads.filter((l) => l.lead_source === s).length,
   }));
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const firstName = intern?.name?.trim().split(/\s+/)[0] ?? "there";
 
   return (
     <CrmLayout title="Dashboard">
@@ -160,11 +174,31 @@ function DashboardPage() {
         </p>
       )}
 
-      <h2 className="mb-3 text-sm font-semibold text-muted-foreground">CRM Overview</h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+      <section className="mb-7 flex flex-col gap-5 rounded-xl border border-border/70 bg-card/55 p-5 shadow-[var(--shadow-card)] backdrop-blur-xl md:flex-row md:items-center md:justify-between md:p-7">
+        <div>
+          <p className="crm-kicker">Today at Pixel AI</p>
+          <h2 className="mt-2 text-2xl font-semibold text-foreground md:text-3xl">
+            {greeting}, {firstName} <span aria-hidden>👋</span>
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">Here&apos;s what&apos;s happening with your leads today.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild>
+            <Link to="/leads" search={{ q: "" }}><Plus className="size-4" /> Add lead</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/follow-ups"><CalendarClock className="size-4" /> Follow-ups</Link>
+          </Button>
+          <Button asChild variant="ghost">
+            <Link to="/leads" search={{ q: "" }}>View leads <ArrowRight className="size-4" /></Link>
+          </Button>
+        </div>
+      </section>
+
+      <p className="crm-kicker mb-3">Pipeline at a glance</p>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard label="Total Leads" value={leads.length} icon={Users} loading={isLoading} />
         <StatCard label="New Leads" value={count("New")} icon={Sparkles} loading={isLoading} />
-        <StatCard label="Contacted" value={count("Contacted")} icon={PhoneCall} loading={isLoading} />
         <StatCard label="Follow-ups Due" value={due.length} icon={CalendarClock} loading={isLoading} />
         <StatCard label="Qualified" value={count("Qualified")} icon={BadgeCheck} loading={isLoading} />
         <StatCard label="Converted" value={count("Converted")} icon={Trophy} loading={isLoading} />
@@ -172,7 +206,7 @@ function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-base">Recent Leads</CardTitle>
             <div className="flex items-center gap-2">
@@ -198,7 +232,7 @@ function DashboardPage() {
                 key={lead.id}
                 to="/leads/$leadId"
                 params={{ leadId: lead.id }}
-                className="flex items-center justify-between rounded-lg border border-border px-3 py-2 transition-colors hover:bg-muted/60"
+                className="flex items-center justify-between rounded-lg border border-border/70 px-3 py-2.5 transition-all hover:border-primary/25 hover:bg-accent/35"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{lead.company_name}</p>
@@ -212,7 +246,7 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-base">Upcoming Follow-ups</CardTitle>
             <div className="flex items-center gap-2">
@@ -238,7 +272,7 @@ function DashboardPage() {
                 key={lead.id}
                 to="/leads/$leadId"
                 params={{ leadId: lead.id }}
-                className="flex items-center justify-between rounded-lg border border-border px-3 py-2 transition-colors hover:bg-muted/60"
+                className="flex items-center justify-between rounded-lg border border-border/70 px-3 py-2.5 transition-all hover:border-primary/25 hover:bg-accent/35"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{lead.company_name}</p>
@@ -254,7 +288,7 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader>
             <CardTitle className="text-base">Status Overview</CardTitle>
           </CardHeader>
@@ -266,7 +300,7 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader>
             <CardTitle className="text-base">Quality Overview</CardTitle>
           </CardHeader>
@@ -282,7 +316,7 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card className="crm-card-interactive lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">Lead Source Overview</CardTitle>
           </CardHeader>
@@ -290,9 +324,35 @@ function DashboardPage() {
             <BreakdownList items={sourceItems} total={leads.length} />
           </CardContent>
         </Card>
+
+        <Card className="crm-card-interactive lg:col-span-2">
+          <CardHeader className="flex-row items-center justify-between space-y-0">
+            <div>
+              <p className="crm-kicker">Live workspace</p>
+              <CardTitle className="mt-1 text-base">Recent Activity</CardTitle>
+            </div>
+            <History className="size-5 text-primary" />
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {activities.slice(0, 5).map((activity) => (
+              <div key={activity.id} className="flex gap-3 rounded-lg border border-border/60 p-3">
+                <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                  <StickyNote className="size-3.5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{activity.description ?? activity.action}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {activity.intern_name ?? "CRM user"} · {formatTime(activity.created_time)}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {activities.length === 0 && <p className="py-5 text-center text-sm text-muted-foreground">No activity recorded yet.</p>}
+          </CardContent>
+        </Card>
       </div>
 
-      <h2 className="mb-3 mt-8 text-sm font-semibold text-muted-foreground">Intern Overview</h2>
+      <p className="crm-kicker mb-3 mt-8">Team overview</p>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
         <StatCard label="Total Interns" value={interns.length} icon={Users} loading={isLoading} />
         <StatCard

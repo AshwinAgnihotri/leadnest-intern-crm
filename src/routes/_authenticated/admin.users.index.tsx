@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { KeyRound, Loader2, ShieldCheck, UserPlus } from "lucide-react";
+import { KeyRound, Loader2, ShieldCheck, UserPlus, UsersRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -117,8 +117,9 @@ function UserManagement() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <h2 className="text-lg font-semibold text-foreground">User Management</h2>
+      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border/70 bg-card/55 p-4 shadow-[var(--shadow-card)] backdrop-blur-xl">
+        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><UsersRound className="size-5" /></div>
+        <div><p className="crm-kicker">Accounts</p><h2 className="mt-0.5 text-lg font-semibold text-foreground">User Management</h2></div>
         {isOwner ? (
           <div className="ml-auto flex gap-2">
             <Button onClick={() => setDialogRole("intern")}>
@@ -135,7 +136,7 @@ function UserManagement() {
         )}
       </div>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="overflow-x-auto p-0">
           <Table>
             <TableHeader>
@@ -165,7 +166,7 @@ function UserManagement() {
                   <TableRow key={p.user_id}>
                     <TableCell className="font-medium">{p.name ?? "—"}</TableCell>
                     <TableCell>{p.email ?? "—"}</TableCell>
-                    <TableCell className="capitalize">{p.role}</TableCell>
+                    <TableCell><span className={`crm-badge ${p.role === "owner" ? "crm-badge-hot" : p.role === "admin" ? "crm-badge-contacted" : "crm-badge-cold"}`}>{p.role}</span></TableCell>
                     <TableCell>{intern?.intern_id ?? "—"}</TableCell>
                     <TableCell>
                       <span

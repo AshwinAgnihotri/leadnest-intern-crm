@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, CheckCheck, Trash2 } from "lucide-react";
+import { Bell, BellOff, CheckCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import {
   syncFollowUpNotifications,
   type AppNotification,
 } from "@/lib/notifications";
+import { EmptyState } from "@/components/crm/EmptyState";
 
 export function NotificationBell() {
   const queryClient = useQueryClient();
@@ -77,9 +78,9 @@ export function NotificationBell() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-[22rem] p-0">
-        <div className="flex items-center justify-between border-b border-border px-3 py-2">
-          <p className="text-sm font-semibold">Notifications</p>
+      <PopoverContent align="end" className="w-[min(22rem,calc(100vw-2rem))] overflow-hidden p-0">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <div><p className="crm-kicker">Updates</p><p className="mt-0.5 text-sm font-semibold">Notifications</p></div>
           <Button
             variant="ghost"
             size="sm"
@@ -92,15 +93,13 @@ export function NotificationBell() {
         </div>
         <ScrollArea className="max-h-96">
           {notifications.length === 0 ? (
-            <p className="px-3 py-8 text-center text-sm text-muted-foreground">
-              No notifications yet.
-            </p>
+            <EmptyState icon={BellOff} title="You’re all caught up" description="New assignments and follow-up reminders will appear here." />
           ) : (
             <ul className="divide-y divide-border">
               {notifications.map((n: AppNotification) => (
                 <li
                   key={n.id}
-                  className={`px-3 py-3 ${n.is_read ? "bg-transparent" : "bg-accent/40"}`}
+                  className={`px-4 py-3 transition-colors hover:bg-accent/30 ${n.is_read ? "bg-transparent" : "bg-accent/40"}`}
                 >
                   <div className="flex items-start gap-2">
                     <span

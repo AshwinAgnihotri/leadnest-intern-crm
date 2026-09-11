@@ -204,7 +204,7 @@ export function LeadFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{isEdit ? `Edit ${lead?.lead_id}` : "Add new lead"}</DialogTitle>
           <DialogDescription>
@@ -225,15 +225,27 @@ export function LeadFormDialog({
             mutation.mutate(form);
           }}
         >
-          <div className="grid gap-4 sm:grid-cols-2">
+          <section className="space-y-3 rounded-xl border border-border/70 bg-background/30 p-4">
+            <div><p className="crm-kicker">Company</p><p className="mt-1 text-xs text-muted-foreground">Business identity and location</p></div>
+            <div className="grid gap-4 sm:grid-cols-2">
             {field("company_name", "Company name *")}
-            {field("contact_person", "Contact person *")}
-            {field("email", "Email", "text", "name@company.com")}
-            {field("phone", "Phone", "text", "+91 98000 00000")}
             {field("website", "Website", "text", "https://company.com")}
-            {field("linkedin", "LinkedIn", "text", "https://linkedin.com/company/...")}
             {field("location", "Location", "text", "City, Country")}
             {dropdown("industry", "Industry", INDUSTRIES)}
+            </div>
+          </section>
+          <section className="space-y-3 rounded-xl border border-border/70 bg-background/30 p-4">
+            <div><p className="crm-kicker">Contact</p><p className="mt-1 text-xs text-muted-foreground">The person you are speaking with</p></div>
+            <div className="grid gap-4 sm:grid-cols-2">
+            {field("contact_person", "Contact person *")}
+            {field("email", "Email", "email", "name@company.com")}
+            {field("phone", "Phone", "tel", "+91 98000 00000")}
+            {field("linkedin", "LinkedIn", "text", "https://linkedin.com/company/...")}
+            </div>
+          </section>
+          <section className="space-y-3 rounded-xl border border-border/70 bg-background/30 p-4">
+            <div><p className="crm-kicker">Lead information</p><p className="mt-1 text-xs text-muted-foreground">Ownership and pipeline position</p></div>
+            <div className="grid gap-4 sm:grid-cols-2">
             {dropdown("lead_source", "Lead source", LEAD_SOURCES)}
             <div className="space-y-1.5">
               <Label>Assigned intern</Label>
@@ -262,9 +274,15 @@ export function LeadFormDialog({
             </div>
             {dropdown("lead_quality", "Lead quality", LEAD_QUALITIES)}
             {dropdown("status", "Status", LEAD_STATUSES)}
+            </div>
+          </section>
+          <section className="space-y-3 rounded-xl border border-border/70 bg-background/30 p-4">
+            <div><p className="crm-kicker">Follow-up</p><p className="mt-1 text-xs text-muted-foreground">Keep your next conversation on track</p></div>
+            <div className="grid gap-4 sm:grid-cols-2">
             {field("last_contacted", "Last contacted", "date")}
             {field("next_follow_up", "Next follow-up", "date")}
-          </div>
+            </div>
+          </section>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { PhoneCall, Plus } from "lucide-react";
+import { PhoneCall, Plus, AlertTriangle, CalendarDays, Clock3 } from "lucide-react";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { MarkContactedDialog } from "@/components/crm/MarkContactedDialog";
@@ -26,6 +26,7 @@ import {
   type Lead,
 } from "@/lib/crm";
 import { sortLeads, type SortField, type SortOrder } from "@/lib/crm-filters";
+import { EmptyState } from "@/components/crm/EmptyState";
 
 export const Route = createFileRoute("/_authenticated/follow-ups")({
   head: () => ({
@@ -49,17 +50,26 @@ function FollowUpSection({
   title,
   leads,
   onContact,
+  tone,
 }: {
   title: string;
   leads: Lead[];
   onContact: (lead: Lead) => void;
+  tone: "overdue" | "today" | "upcoming";
 }) {
+  const config = {
+    overdue: { icon: AlertTriangle, label: "Needs attention", className: "text-destructive bg-destructive/10 border-destructive/20" },
+    today: { icon: CalendarDays, label: "Due today", className: "text-primary bg-primary/10 border-primary/20" },
+    upcoming: { icon: Clock3, label: "Planned", className: "text-chart-3 bg-chart-3/10 border-chart-3/20" },
+  }[tone];
+  const Icon = config.icon;
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">
-          {title} <span className="text-muted-foreground">({leads.length})</span>
-        </CardTitle>
+    <Card className="overflow-hidden">
+      <CardHeader className="flex-row items-center justify-between space-y-0">
+        <div className="flex items-center gap-3">
+          <div className={`flex size-9 items-center justify-center rounded-lg border ${config.className}`}><Icon className="size-4" /></div>
+          <div><CardTitle className="text-base">{title} <span className="text-muted-foreground">({leads.length})</span></CardTitle><p className="mt-1 text-xs text-muted-foreground">{config.label}</p></div>
+        </div>
       </CardHeader>
       <CardContent className="p-0 pb-4">
         {leads.length === 0 ? (
@@ -167,21 +177,20 @@ function FollowUpsPage() {
         <Skeleton className="h-64 w-full" />
       ) : leads.length === 0 ? (
         <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-16">
-            <p className="text-sm text-muted-foreground">No follow-ups scheduled</p>
-            <Button asChild>
+          <CardContent className="p-0">
+            <EmptyState icon={CalendarDays} title="No follow-ups scheduled" description="Add a follow-up date to a lead and it will appear here." action={<Button asChild>
               <Link to="/leads" search={{ q: "" }}>
                 <Plus className="size-4" />
                 Add Your First Lead
               </Link>
-            </Button>
+            </Button>} />
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
-          <FollowUpSection title="Overdue" leads={overdue} onContact={setActive} />
-          <FollowUpSection title="Today" leads={today} onContact={setActive} />
-          <FollowUpSection title="Upcoming" leads={upcoming} onContact={setActive} />
+          <FollowUpSection title="Overdue" tone="overdue" leads={overdue} onContact={setActive} />
+          <FollowUpSection title="Today" tone="today" leads={today} onContact={setActive} />
+          <FollowUpSection title="Upcoming" tone="upcoming" leads={upcoming} onContact={setActive} />
         </div>
       )}
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { MessageSquareText, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { formatTime, logActivity, activitiesQueryKey } from "@/lib/activity";
 import { notificationsQueryKey, notify } from "@/lib/notifications";
 import { useCurrentIntern } from "@/lib/current-intern";
 import { useInterns } from "@/lib/use-interns";
+import { EmptyState } from "@/components/crm/EmptyState";
 
 export function LeadNotes({ lead }: { lead: Lead }) {
   const queryClient = useQueryClient();
@@ -153,13 +154,13 @@ export function LeadNotes({ lead }: { lead: Lead }) {
         )}
 
         {isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading notes...</p>
+          <div className="space-y-2"><div className="crm-skeleton h-20 rounded-lg" /><div className="crm-skeleton h-20 rounded-lg" /></div>
         ) : notes.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No notes yet for this lead.</p>
+          <EmptyState icon={MessageSquareText} title="No notes yet" description="Add context, call outcomes, or useful details for the next conversation." />
         ) : (
           <ul className="space-y-3">
             {notes.map((note) => (
-              <li key={note.id} className="rounded-lg border border-border p-3">
+              <li key={note.id} className="rounded-xl border border-border/70 bg-background/30 p-4 transition-all hover:border-primary/20 hover:bg-accent/20">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-foreground">
                     {note.created_by ?? "CRM User"}

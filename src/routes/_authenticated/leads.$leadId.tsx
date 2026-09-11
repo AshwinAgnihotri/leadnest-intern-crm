@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Pencil, Trash2, PhoneCall } from "lucide-react";
+import { ArrowLeft, Building2, CalendarDays, Contact, Pencil, Trash2, PhoneCall, Workflow } from "lucide-react";
 import { toast } from "sonner";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
@@ -192,7 +192,7 @@ function LeadDetailsPage() {
 
   return (
     <CrmLayout title={lead.company_name}>
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-card/55 p-3 shadow-[var(--shadow-card)] backdrop-blur-xl">
         <Button asChild variant="ghost" size="sm">
           <Link to="/leads" search={{ q: "" }}>
             <ArrowLeft className="size-4" />
@@ -219,9 +219,9 @@ function LeadDetailsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader>
-            <CardTitle className="text-base">Company Information</CardTitle>
+            <div className="flex items-center gap-3"><div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary"><Building2 className="size-4" /></div><CardTitle className="text-base">Company Information</CardTitle></div>
           </CardHeader>
           <CardContent>
             <Row label="Company name" value={lead.company_name} />
@@ -232,9 +232,9 @@ function LeadDetailsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader>
-            <CardTitle className="text-base">Contact Information</CardTitle>
+            <div className="flex items-center gap-3"><div className="flex size-9 items-center justify-center rounded-lg bg-accent text-accent-foreground"><Contact className="size-4" /></div><CardTitle className="text-base">Contact Information</CardTitle></div>
           </CardHeader>
           <CardContent>
             <Row label="Contact person" value={lead.contact_person} />
@@ -249,7 +249,7 @@ function LeadDetailsPage() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle className="text-base">Lead Management</CardTitle>
+            <div className="flex items-center gap-3"><div className="flex size-9 items-center justify-center rounded-lg bg-chart-3/10 text-chart-3"><Workflow className="size-4" /></div><div><CardTitle className="text-base">Lead Management</CardTitle><p className="mt-1 text-xs text-muted-foreground"><CalendarDays className="mr-1 inline size-3" />Created {formatDate(lead.created_date)}</p></div></div>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div>

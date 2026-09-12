@@ -14,6 +14,8 @@ export const ACTIVITY_ACTIONS = [
   "Change Lead Quality",
   "Assign Lead",
   "Schedule Follow-up",
+  "Archive Lead",
+  "Restore Lead",
 ] as const;
 
 export type ActivityAction = (typeof ACTIVITY_ACTIONS)[number];

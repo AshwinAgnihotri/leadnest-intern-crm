@@ -15,6 +15,7 @@ import {
 import { formatDate } from "@/lib/crm";
 import {
   ANY,
+  ARCHIVE_VIEWS,
   DATE_FIELDS,
   DATE_PRESETS,
   activeFilterCount,
@@ -116,6 +117,25 @@ export function LeadFilterBar({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="max-h-[70vh] w-80 space-y-3 overflow-y-auto" align="end">
+          <div className="space-y-1.5">
+            <Label>Lead view</Label>
+            <Select
+              value={filters.archive ?? "active"}
+              onValueChange={(v) => set("archive", v as LeadFilters["archive"])}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {ARCHIVE_VIEWS.map((v) => (
+                  <SelectItem key={v.value} value={v.value}>
+                    {v.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <FilterSelect
             label="Status"
             value={filters.status}

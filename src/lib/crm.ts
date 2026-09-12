@@ -27,6 +27,8 @@ export const LEAD_SOURCES = [
 
 export const INTERNS = ["Intern 1", "Intern 2", "Intern 3", "Intern 4"];
 
+export const CUSTOM_INDUSTRY = "Custom Industry";
+
 export const INDUSTRIES = [
   "Software",
   "SaaS",
@@ -39,8 +41,16 @@ export const INDUSTRIES = [
   "Biotech",
   "Retail",
   "Education",
-  "Other",
+  CUSTOM_INDUSTRY,
 ];
+
+/** Legacy leads may still carry the old "Other"/"Others" value — keep them working. */
+export const LEGACY_INDUSTRY_VALUES = ["Other", "Others"];
+
+export function isPresetIndustry(value?: string | null): boolean {
+  if (!value) return false;
+  return INDUSTRIES.includes(value) || LEGACY_INDUSTRY_VALUES.includes(value);
+}
 
 export interface Lead {
   id: string;

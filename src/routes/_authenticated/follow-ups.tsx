@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  activeLeads,
   fetchLeads,
   leadsQueryKey,
   formatDate,

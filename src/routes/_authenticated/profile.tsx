@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchLeads, leadsQueryKey, isFollowUpDue } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey, isFollowUpDue } from "@/lib/crm";
 import { fetchInterns, internsQueryKey, leadsForIntern } from "@/lib/interns";
 
 export const Route = createFileRoute("/_authenticated/profile")({
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
 });
 
 function ProfilePage() {
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
   const { data: interns = [] } = useQuery({ queryKey: internsQueryKey, queryFn: fetchInterns });
 
   return (

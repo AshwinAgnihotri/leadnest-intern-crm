@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchLeads, leadsQueryKey } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey } from "@/lib/crm";
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import { countByStatus, followUpSplit, formatMinutes, workingMinutes } from "@/lib/admin";
 

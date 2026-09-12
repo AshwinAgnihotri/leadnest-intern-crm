@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, leadsQueryKey } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey } from "@/lib/crm";
 import {
   fetchInterns,
   internsQueryKey,
@@ -71,7 +71,7 @@ function AdminInterns() {
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
 
   const t = term.trim().toLowerCase();
   const rows = interns

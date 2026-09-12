@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, leadsQueryKey, formatDate, statusClass } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey, formatDate, statusClass } from "@/lib/crm";
 import {
   fetchInterns,
   internsQueryKey,
@@ -62,7 +62,7 @@ function InternProfilePage() {
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
 
   const intern = interns.find((i) => i.id === internId);
 

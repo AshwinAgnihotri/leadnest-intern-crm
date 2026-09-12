@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, formatDate, leadsQueryKey } from "@/lib/crm";
+import { activeLeads, fetchLeads, formatDate, leadsQueryKey } from "@/lib/crm";
 import {
   fetchIntern,
   fetchInterns,
@@ -78,7 +78,7 @@ function AdminInternDetails() {
     queryKey: [...internsQueryKey, internId],
     queryFn: () => fetchIntern(internId),
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
   const { data: notes = [] } = useQuery({ queryKey: allNotesQueryKey, queryFn: fetchAllNotes });
   const { data: activities = [] } = useQuery({
     queryKey: activitiesQueryKey,

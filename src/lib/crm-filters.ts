@@ -174,8 +174,16 @@ export function matchesDate(lead: Lead, f: LeadFilters): boolean {
   return true;
 }
 
+export function matchesArchive(lead: Lead, view: ArchiveView = "active"): boolean {
+  const archived = Boolean(lead.is_archived);
+  if (view === "active") return !archived;
+  if (view === "archived") return archived;
+  return true;
+}
+
 export function matchesFilters(lead: Lead, f: LeadFilters): boolean {
   return (
+    matchesArchive(lead, f.archive ?? "active") &&
     (f.status === ANY || lead.status === f.status) &&
     (f.quality === ANY || lead.lead_quality === f.quality) &&
     (f.source === ANY || lead.lead_source === f.source) &&

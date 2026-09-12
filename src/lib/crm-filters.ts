@@ -40,7 +40,16 @@ export const SORT_FIELDS = [
 export type SortField = (typeof SORT_FIELDS)[number]["value"];
 export type SortOrder = "asc" | "desc";
 
+export const ARCHIVE_VIEWS = [
+  { value: "active", label: "Active" },
+  { value: "archived", label: "Archived" },
+  { value: "all", label: "All" },
+] as const;
+
+export type ArchiveView = (typeof ARCHIVE_VIEWS)[number]["value"];
+
 export interface LeadFilters {
+  archive: ArchiveView;
   status: string;
   quality: string;
   source: string;
@@ -55,6 +64,7 @@ export interface LeadFilters {
 }
 
 export const defaultFilters: LeadFilters = {
+  archive: "active",
   status: ANY,
   quality: ANY,
   source: ANY,

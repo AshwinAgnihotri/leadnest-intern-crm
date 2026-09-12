@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Users, CalendarClock, Settings, Menu, Search, UserRound, GraduationCap, History, LogOut, ShieldCheck, Command } from "lucide-react";
+import { LayoutDashboard, Users, CalendarClock, Menu, Search, UserRound, GraduationCap, History, LogOut, ShieldCheck, Command } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -73,15 +73,6 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         >
           <UserRound className="size-4" />
           Intern Profile
-        </Link>
-        <Link
-          to="/settings"
-          onClick={onNavigate}
-          activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground" }}
-           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground/65 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"
-        >
-          <Settings className="size-4" />
-          Settings
         </Link>
       </div>
     </div>

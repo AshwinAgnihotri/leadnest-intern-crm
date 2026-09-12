@@ -38,15 +38,15 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/users/")({
   head: () => ({
     meta: [
-      { title: "Admin · User Management — Pixel AI Intern CRM" },
+      { title: "Admin · User Management — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Owner tools to create intern and admin login accounts and manage their status.",
       },
-      { property: "og:title", content: "Admin · User Management — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Admin · User Management — LeadNest Intern CRM" },
       {
         property: "og:description",
-        content: "Create and manage intern and admin accounts for the Pixel AI CRM.",
+        content: "Create and manage intern and admin accounts for the LeadNest Intern CRM.",
       },
     ],
   }),

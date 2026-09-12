@@ -19,15 +19,15 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Intern Login — Pixel AI Intern CRM" },
+      { title: "Intern Login — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Sign in with your intern account to see the leads, follow-ups and notes assigned to you.",
       },
-      { property: "og:title", content: "Intern Login — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Intern Login — LeadNest Intern CRM" },
       {
         property: "og:description",
-        content: "Secure intern sign-in for the Pixel AI Intern CRM workspace.",
+        content: "Secure intern sign-in for the LeadNest Intern CRM workspace.",
       },
     ],
   }),
@@ -129,8 +129,8 @@ function AuthPage() {
           </CardTitle>
           <p className="max-w-xs text-sm text-muted-foreground">
             {mode === "signin" && tab === "admin"
-              ? "Pixel AI Intern CRM — for admin and owner accounts."
-              : "Pixel AI Intern CRM — you only ever see the work assigned to your own Intern ID."}
+              ? "LeadNest Intern CRM — for admin and owner accounts."
+              : "LeadNest Intern CRM — you only ever see the work assigned to your own Intern ID."}
           </p>
         </CardHeader>
         <CardContent className="pb-8">

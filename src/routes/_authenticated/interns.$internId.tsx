@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, leadsQueryKey, formatDate, statusClass } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey, formatDate, statusClass } from "@/lib/crm";
 import {
   fetchInterns,
   internsQueryKey,
@@ -30,12 +30,12 @@ import {
 export const Route = createFileRoute("/_authenticated/interns/$internId")({
   head: () => ({
     meta: [
-      { title: "Intern Profile — Pixel AI Intern CRM" },
+      { title: "Intern Profile — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Personal details, CRM performance and login activity for a single intern.",
       },
-      { property: "og:title", content: "Intern Profile — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Intern Profile — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Intern details with assigned, contacted and converted lead counts.",
@@ -62,7 +62,7 @@ function InternProfilePage() {
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
 
   const intern = interns.find((i) => i.id === internId);
 

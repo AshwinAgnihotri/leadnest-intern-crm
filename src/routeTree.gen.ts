@@ -16,7 +16,6 @@ import { Route as AuthenticatedActivityRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedFollowUpsRouteImport } from './routes/_authenticated/follow-ups'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedInternsIndexRouteImport } from './routes/_authenticated/interns.index'
 import { Route as AuthenticatedInternsInternIdRouteImport } from './routes/_authenticated/interns.$internId'
@@ -59,11 +58,6 @@ const AuthenticatedFollowUpsRoute = AuthenticatedFollowUpsRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -126,7 +120,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/settings': typeof AuthenticatedSettingsRoute
   '/interns/$internId': typeof AuthenticatedInternsInternIdRoute
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -142,7 +135,6 @@ export interface FileRoutesByTo {
   '/activity': typeof AuthenticatedActivityRoute
   '/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/settings': typeof AuthenticatedSettingsRoute
   '/': typeof AuthenticatedIndexRoute
   '/interns/$internId': typeof AuthenticatedInternsInternIdRoute
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -162,7 +154,6 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/follow-ups': typeof AuthenticatedFollowUpsRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/interns/$internId': typeof AuthenticatedInternsInternIdRoute
   '/_authenticated/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
@@ -183,7 +174,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/follow-ups'
     | '/profile'
-    | '/settings'
     | '/interns/$internId'
     | '/leads/$leadId'
     | '/admin/'
@@ -199,7 +189,6 @@ export interface FileRouteTypes {
     | '/activity'
     | '/follow-ups'
     | '/profile'
-    | '/settings'
     | '/'
     | '/interns/$internId'
     | '/leads/$leadId'
@@ -218,7 +207,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/follow-ups'
     | '/_authenticated/profile'
-    | '/_authenticated/settings'
     | '/_authenticated/'
     | '/_authenticated/interns/$internId'
     | '/_authenticated/leads/$leadId'
@@ -285,13 +273,6 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/': {
@@ -385,7 +366,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedFollowUpsRoute: typeof AuthenticatedFollowUpsRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedInternsInternIdRoute: typeof AuthenticatedInternsInternIdRoute
   AuthenticatedLeadsLeadIdRoute: typeof AuthenticatedLeadsLeadIdRoute
@@ -398,7 +378,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedFollowUpsRoute: AuthenticatedFollowUpsRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedInternsInternIdRoute: AuthenticatedInternsInternIdRoute,
   AuthenticatedLeadsLeadIdRoute: AuthenticatedLeadsLeadIdRoute,

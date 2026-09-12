@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
+  activeLeads,
   fetchLeads,
   leadsQueryKey,
   formatDate,
@@ -56,13 +57,13 @@ import { activitiesQueryKey, fetchActivities, formatTime } from "@/lib/activity"
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Pixel AI Intern CRM" },
+      { title: "Dashboard — LeadNest Intern CRM" },
       {
         name: "description",
         content:
-          "Track leads, follow-ups and conversions at a glance in the Pixel AI Intern CRM dashboard.",
+          "Track leads, follow-ups and conversions at a glance in the LeadNest Intern CRM dashboard.",
       },
-      { property: "og:title", content: "Dashboard — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Dashboard — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Lead statistics, recent leads and upcoming follow-ups for interns.",
@@ -129,6 +130,7 @@ function DashboardPage() {
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
+    select: activeLeads,
   });
 
   const { data: interns = [] } = useQuery({
@@ -177,7 +179,7 @@ function DashboardPage() {
 
       <section className="mb-7 flex flex-col gap-5 rounded-xl border border-border/70 bg-card/55 p-5 shadow-[var(--shadow-card)] backdrop-blur-xl md:flex-row md:items-center md:justify-between md:p-7">
         <div>
-          <p className="crm-kicker">Today at Pixel AI</p>
+          <p className="crm-kicker">Today at LeadNest</p>
           <h2 className="mt-2 text-2xl font-semibold text-foreground md:text-3xl">
             {greeting}, {firstName} <span aria-hidden>👋</span>
           </h2>

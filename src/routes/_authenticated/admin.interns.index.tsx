@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, leadsQueryKey } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey } from "@/lib/crm";
 import {
   fetchInterns,
   internsQueryKey,
@@ -46,12 +46,12 @@ type SortKey = (typeof SORTS)[number]["value"];
 export const Route = createFileRoute("/_authenticated/admin/interns/")({
   head: () => ({
     meta: [
-      { title: "Admin · Interns — Pixel AI Intern CRM" },
+      { title: "Admin · Interns — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Every intern with lead performance, follow-ups and working time.",
       },
-      { property: "og:title", content: "Admin · Interns — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Admin · Interns — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Admin view of all interns and their CRM performance.",
@@ -71,7 +71,7 @@ function AdminInterns() {
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
 
   const t = term.trim().toLowerCase();
   const rows = interns

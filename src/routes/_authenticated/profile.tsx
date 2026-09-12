@@ -3,21 +3,21 @@ import { useQuery } from "@tanstack/react-query";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchLeads, leadsQueryKey, isFollowUpDue } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey, isFollowUpDue } from "@/lib/crm";
 import { fetchInterns, internsQueryKey, leadsForIntern } from "@/lib/interns";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
-      { title: "Intern Profile — Pixel AI Intern CRM" },
+      { title: "Intern Profile — LeadNest Intern CRM" },
       {
         name: "description",
         content: "See how many leads each intern owns and how many follow-ups are due.",
       },
-      { property: "og:title", content: "Intern Profile — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Intern Profile — LeadNest Intern CRM" },
       {
         property: "og:description",
-        content: "Per-intern lead workload inside the Pixel AI Intern CRM.",
+        content: "Per-intern lead workload inside the LeadNest Intern CRM.",
       },
     ],
   }),
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
 });
 
 function ProfilePage() {
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
   const { data: interns = [] } = useQuery({ queryKey: internsQueryKey, queryFn: fetchInterns });
 
   return (

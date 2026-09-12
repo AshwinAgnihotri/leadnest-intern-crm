@@ -25,7 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, leadsQueryKey, formatDate } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey, formatDate } from "@/lib/crm";
 import {
   fetchInterns,
   internsQueryKey,
@@ -53,13 +53,13 @@ type InternSort = (typeof SORT_OPTIONS)[number]["value"];
 export const Route = createFileRoute("/_authenticated/interns/")({
   head: () => ({
     meta: [
-      { title: "Interns — Pixel AI Intern CRM" },
+      { title: "Interns — LeadNest Intern CRM" },
       {
         name: "description",
         content:
           "Manage the intern team: status, login activity and lead performance for every intern.",
       },
-      { property: "og:title", content: "Interns — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Interns — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Intern directory with lead assignment and conversion performance.",
@@ -85,7 +85,7 @@ function InternsPage() {
     queryKey: internsQueryKey,
     queryFn: fetchInterns,
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
 
   const range = resolveRange({
     datePreset: preset,

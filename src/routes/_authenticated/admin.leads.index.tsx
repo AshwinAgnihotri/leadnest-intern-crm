@@ -50,13 +50,13 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/leads/")({
   head: () => ({
     meta: [
-      { title: "Admin · All Leads — Pixel AI Intern CRM" },
+      { title: "Admin · All Leads — LeadNest Intern CRM" },
       {
         name: "description",
         content:
           "Company-wide lead table for admins: filter by intern, status, quality, industry, source and date.",
       },
-      { property: "og:title", content: "Admin · All Leads — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Admin · All Leads — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Every CRM lead with its assigned intern, quality, status and follow-up dates.",

@@ -40,7 +40,16 @@ export const SORT_FIELDS = [
 export type SortField = (typeof SORT_FIELDS)[number]["value"];
 export type SortOrder = "asc" | "desc";
 
+export const ARCHIVE_VIEWS = [
+  { value: "active", label: "Active" },
+  { value: "archived", label: "Archived" },
+  { value: "all", label: "All" },
+] as const;
+
+export type ArchiveView = (typeof ARCHIVE_VIEWS)[number]["value"];
+
 export interface LeadFilters {
+  archive: ArchiveView;
   status: string;
   quality: string;
   source: string;
@@ -55,6 +64,7 @@ export interface LeadFilters {
 }
 
 export const defaultFilters: LeadFilters = {
+  archive: "active",
   status: ANY,
   quality: ANY,
   source: ANY,
@@ -164,8 +174,16 @@ export function matchesDate(lead: Lead, f: LeadFilters): boolean {
   return true;
 }
 
+export function matchesArchive(lead: Lead, view: ArchiveView = "active"): boolean {
+  const archived = Boolean(lead.is_archived);
+  if (view === "active") return !archived;
+  if (view === "archived") return archived;
+  return true;
+}
+
 export function matchesFilters(lead: Lead, f: LeadFilters): boolean {
   return (
+    matchesArchive(lead, f.archive ?? "active") &&
     (f.status === ANY || lead.status === f.status) &&
     (f.quality === ANY || lead.lead_quality === f.quality) &&
     (f.source === ANY || lead.lead_source === f.source) &&
@@ -182,6 +200,7 @@ export function activeFilterCount(f: LeadFilters): number {
   }
   if (resolveRange(f)) n += 1;
   if (f.fromTime || f.toTime) n += 1;
+  if (f.archive && f.archive !== "active") n += 1;
   return n;
 }
 

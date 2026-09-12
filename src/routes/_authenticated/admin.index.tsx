@@ -3,19 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetchLeads, leadsQueryKey } from "@/lib/crm";
+import { activeLeads, fetchLeads, leadsQueryKey } from "@/lib/crm";
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import { countByStatus, followUpSplit, formatMinutes, workingMinutes } from "@/lib/admin";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
     meta: [
-      { title: "Admin Overview — Pixel AI Intern CRM" },
+      { title: "Admin Overview — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Company-wide CRM overview for admins and owners: interns, leads and follow-ups.",
       },
-      { property: "og:title", content: "Admin Overview — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Admin Overview — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Live totals across every intern, lead and follow-up in the CRM.",
@@ -33,6 +33,7 @@ function AdminOverview() {
   const { data: leads = [], isLoading: ll } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
+    select: activeLeads,
   });
 
   if (li || ll) return <Skeleton className="h-48 w-full" />;

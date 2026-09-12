@@ -27,6 +27,8 @@ export const LEAD_SOURCES = [
 
 export const INTERNS = ["Intern 1", "Intern 2", "Intern 3", "Intern 4"];
 
+export const CUSTOM_INDUSTRY = "Custom Industry";
+
 export const INDUSTRIES = [
   "Software",
   "SaaS",
@@ -39,8 +41,16 @@ export const INDUSTRIES = [
   "Biotech",
   "Retail",
   "Education",
-  "Other",
+  CUSTOM_INDUSTRY,
 ];
+
+/** Legacy leads may still carry the old "Other"/"Others" value — keep them working. */
+export const LEGACY_INDUSTRY_VALUES = ["Other", "Others"];
+
+export function isPresetIndustry(value?: string | null): boolean {
+  if (!value) return false;
+  return INDUSTRIES.includes(value) || LEGACY_INDUSTRY_VALUES.includes(value);
+}
 
 export interface Lead {
   id: string;
@@ -62,9 +72,13 @@ export interface Lead {
   last_updated: string;
   last_contacted: string | null;
   next_follow_up: string | null;
+  is_archived: boolean;
 }
 
-export type LeadInput = Omit<Lead, "id" | "lead_id" | "created_date" | "last_updated">;
+export type LeadInput = Omit<
+  Lead,
+  "id" | "lead_id" | "created_date" | "last_updated" | "is_archived"
+>;
 
 export const leadsQueryKey = ["leads"] as const;
 
@@ -99,6 +113,22 @@ export async function updateLead(id: string, input: Partial<LeadInput>): Promise
 export async function deleteLead(id: string): Promise<void> {
   const { error } = await supabase.from("leads").delete().eq("id", id);
   if (error) throw new Error("Failed to delete lead");
+}
+
+/** Non-archived leads only — used by dashboard, follow-ups and intern views. */
+export function activeLeads(leads: Lead[]): Lead[] {
+  return leads.filter((l) => !l.is_archived);
+}
+
+export async function setLeadArchived(id: string, archived: boolean): Promise<Lead> {
+  const { data, error } = await supabase
+    .from("leads")
+    .update({ is_archived: archived })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw new Error(archived ? "Failed to archive lead" : "Failed to restore lead");
+  return data as Lead;
 }
 
 /* ---------- helpers ---------- */

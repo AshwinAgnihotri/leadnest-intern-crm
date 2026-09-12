@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Building2, CalendarDays, Contact, Pencil, Trash2, PhoneCall, Workflow } from "lucide-react";
+import { ArrowLeft, Archive, ArchiveRestore, Building2, CalendarDays, Contact, FileDown, Pencil, Trash2, PhoneCall, Workflow } from "lucide-react";
 import { toast } from "sonner";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
@@ -30,6 +30,7 @@ import {
 import {
   fetchLeads,
   deleteLead,
+  setLeadArchived,
   updateLead,
   leadsQueryKey,
   formatDate,
@@ -44,16 +45,18 @@ import { LeadNotes } from "@/components/crm/LeadNotes";
 import { activitiesQueryKey, logActivity, type ActivityAction } from "@/lib/activity";
 import { notificationsQueryKey, notify } from "@/lib/notifications";
 import { useCurrentIntern } from "@/lib/current-intern";
+import { fetchNotes, notesQueryKey } from "@/lib/notes";
+import { downloadLeadPdf } from "@/lib/lead-pdf";
 
 export const Route = createFileRoute("/_authenticated/leads/$leadId")({
   head: () => ({
     meta: [
-      { title: "Lead details — Pixel AI Intern CRM" },
+      { title: "Lead details — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Full company, contact and lead management details with follow-up actions.",
       },
-      { property: "og:title", content: "Lead details — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Lead details — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Review and update a single lead, mark it contacted and schedule follow-ups.",
@@ -146,6 +149,30 @@ function LeadDetailsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const { data: leadNotes = [] } = useQuery({
+    queryKey: [...notesQueryKey, leadId],
+    queryFn: () => fetchNotes(leadId),
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: async (archived: boolean) => {
+      const saved = await setLeadArchived(leadId, archived);
+      await logActivity({
+        action: archived ? "Archive Lead" : "Restore Lead",
+        description: `${archived ? "Archived" : "Restored"} lead ${saved.company_name}`,
+        intern: currentIntern ?? null,
+        lead: saved,
+      });
+      return saved;
+    },
+    onSuccess: (saved) => {
+      queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      toast.success(saved.is_archived ? "Lead archived" : "Lead restored to active");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   const removeMutation = useMutation({
     mutationFn: async () => {
       if (lead) {
@@ -210,6 +237,28 @@ function LeadDetailsPage() {
           <Button variant="outline" onClick={() => setEditOpen(true)}>
             <Pencil className="size-4" />
             Edit Lead
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              downloadLeadPdf(lead, leadNotes);
+              toast.success("Lead PDF downloaded");
+            }}
+          >
+            <FileDown className="size-4" />
+            Download PDF
+          </Button>
+          <Button
+            variant="outline"
+            disabled={archiveMutation.isPending}
+            onClick={() => archiveMutation.mutate(!lead.is_archived)}
+          >
+            {lead.is_archived ? (
+              <ArchiveRestore className="size-4" />
+            ) : (
+              <Archive className="size-4" />
+            )}
+            {lead.is_archived ? "Restore Lead" : "Archive Lead"}
           </Button>
           <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
             <Trash2 className="size-4" />
@@ -374,9 +423,10 @@ function LeadDetailsPage() {
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure to delete this Lead?</AlertDialogTitle>
             <AlertDialogDescription>
-              {lead.company_name} ({lead.lead_id}) will be permanently removed.
+              {lead.company_name} ({lead.lead_id}) will be permanently removed. Use Archive
+              instead if you only want to hide it from the active list.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

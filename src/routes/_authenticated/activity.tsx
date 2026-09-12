@@ -38,13 +38,13 @@ import { useInterns } from "@/lib/use-interns";
 export const Route = createFileRoute("/_authenticated/activity")({
   head: () => ({
     meta: [
-      { title: "Activity Log — Pixel AI Intern CRM" },
+      { title: "Activity Log — LeadNest Intern CRM" },
       {
         name: "description",
         content:
           "Track every intern action on leads: adds, edits, contacts, notes, status changes and follow-ups.",
       },
-      { property: "og:title", content: "Activity Log — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Activity Log — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "A searchable, filterable history of intern activity across all CRM leads.",

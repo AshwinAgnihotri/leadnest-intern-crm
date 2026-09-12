@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchLeads, formatDate, leadsQueryKey } from "@/lib/crm";
+import { activeLeads, fetchLeads, formatDate, leadsQueryKey } from "@/lib/crm";
 import {
   fetchIntern,
   fetchInterns,
@@ -35,12 +35,12 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/interns/$internId")({
   head: () => ({
     meta: [
-      { title: "Admin · Intern Details — Pixel AI Intern CRM" },
+      { title: "Admin · Intern Details — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Full work summary for one intern: leads, follow-ups, notes, activity and time.",
       },
-      { property: "og:title", content: "Admin · Intern Details — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Admin · Intern Details — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Lead activity, follow-ups, notes, recent CRM activity and working time.",
@@ -78,7 +78,7 @@ function AdminInternDetails() {
     queryKey: [...internsQueryKey, internId],
     queryFn: () => fetchIntern(internId),
   });
-  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads });
+  const { data: leads = [] } = useQuery({ queryKey: leadsQueryKey, queryFn: fetchLeads, select: activeLeads });
   const { data: notes = [] } = useQuery({ queryKey: allNotesQueryKey, queryFn: fetchAllNotes });
   const { data: activities = [] } = useQuery({
     queryKey: activitiesQueryKey,

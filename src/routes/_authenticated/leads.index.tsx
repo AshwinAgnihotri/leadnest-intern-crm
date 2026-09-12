@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Eye, Pencil, Trash2, Users } from "lucide-react";
+import { Search, Plus, Eye, Pencil, Trash2, Users, Archive, ArchiveRestore, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -33,8 +33,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   fetchLeads,
   deleteLead,
+  setLeadArchived,
   leadsQueryKey,
   formatDate,
   statusClass,
@@ -46,6 +54,7 @@ import {
   type Lead,
 } from "@/lib/crm";
 import {
+  ARCHIVE_VIEWS,
   defaultFilters,
   matchesFilters,
   matchesSearch,
@@ -59,6 +68,7 @@ import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import { activitiesQueryKey, logActivity } from "@/lib/activity";
 import { useCurrentIntern } from "@/lib/current-intern";
 import { EmptyState } from "@/components/crm/EmptyState";
+import { downloadAllLeadsPdf } from "@/lib/lead-pdf";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),
@@ -68,12 +78,12 @@ export const Route = createFileRoute("/_authenticated/leads/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Leads — Pixel AI Intern CRM" },
+      { title: "Leads — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Browse, search and filter every business lead collected by the intern team.",
       },
-      { property: "og:title", content: "Leads — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Leads — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "A searchable table of all leads with quality, status and follow-up tracking.",
@@ -125,6 +135,25 @@ function LeadsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const archiveMutation = useMutation({
+    mutationFn: async ({ lead, archived }: { lead: Lead; archived: boolean }) => {
+      const saved = await setLeadArchived(lead.id, archived);
+      await logActivity({
+        action: archived ? "Archive Lead" : "Restore Lead",
+        description: `${archived ? "Archived" : "Restored"} lead ${lead.company_name}`,
+        intern: currentIntern ?? null,
+        lead: saved,
+      });
+      return saved;
+    },
+    onSuccess: (saved) => {
+      queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      toast.success(saved.is_archived ? "Lead archived" : "Lead restored to active");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   const filtered = sortLeads(
     leads.filter((lead) => matchesSearch(lead, q) && matchesFilters(lead, filters)),
     sortField,
@@ -153,6 +182,24 @@ function LeadsPage() {
           />
         </div>
 
+        <Select
+          value={filters.archive}
+          onValueChange={(v) =>
+            setFilters({ ...filters, archive: v as LeadFilters["archive"] })
+          }
+        >
+          <SelectTrigger className="w-32" aria-label="Lead view">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ARCHIVE_VIEWS.map((v) => (
+              <SelectItem key={v.value} value={v.value}>
+                {v.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <LeadFilterBar
           filters={filters}
           onChange={setFilters}
@@ -169,6 +216,18 @@ function LeadsPage() {
           onFieldChange={setSortField}
           onOrderChange={setSortOrder}
         />
+
+        <Button
+          variant="outline"
+          disabled={filtered.length === 0}
+          onClick={() => {
+            downloadAllLeadsPdf(filtered, "All leads export");
+            toast.success("Leads PDF downloaded");
+          }}
+        >
+          <FileDown className="size-4" />
+          Download All PDF
+        </Button>
 
         <Button
           onClick={() => {
@@ -280,7 +339,24 @@ function LeadsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            aria-label={lead.is_archived ? "Restore lead" : "Archive lead"}
+                            title={lead.is_archived ? "Restore lead" : "Archive lead"}
+                            disabled={archiveMutation.isPending}
+                            onClick={() =>
+                              archiveMutation.mutate({ lead, archived: !lead.is_archived })
+                            }
+                          >
+                            {lead.is_archived ? (
+                              <ArchiveRestore className="size-4 text-primary" />
+                            ) : (
+                              <Archive className="size-4 text-muted-foreground" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             aria-label="Delete lead"
+                            title="Delete lead"
                             onClick={() => setToDelete(lead)}
                           >
                             <Trash2 className="size-4 text-destructive" />
@@ -301,9 +377,10 @@ function LeadsPage() {
       <AlertDialog open={Boolean(toDelete)} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure to delete this Lead?</AlertDialogTitle>
             <AlertDialogDescription>
-              {toDelete?.company_name} ({toDelete?.lead_id}) will be permanently removed.
+              {toDelete?.company_name} ({toDelete?.lead_id}) will be permanently removed. Use
+              Archive instead if you only want to hide it from the active list.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

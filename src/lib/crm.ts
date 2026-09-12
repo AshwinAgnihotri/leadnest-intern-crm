@@ -72,9 +72,13 @@ export interface Lead {
   last_updated: string;
   last_contacted: string | null;
   next_follow_up: string | null;
+  is_archived: boolean;
 }
 
-export type LeadInput = Omit<Lead, "id" | "lead_id" | "created_date" | "last_updated">;
+export type LeadInput = Omit<
+  Lead,
+  "id" | "lead_id" | "created_date" | "last_updated" | "is_archived"
+>;
 
 export const leadsQueryKey = ["leads"] as const;
 
@@ -109,6 +113,17 @@ export async function updateLead(id: string, input: Partial<LeadInput>): Promise
 export async function deleteLead(id: string): Promise<void> {
   const { error } = await supabase.from("leads").delete().eq("id", id);
   if (error) throw new Error("Failed to delete lead");
+}
+
+export async function setLeadArchived(id: string, archived: boolean): Promise<Lead> {
+  const { data, error } = await supabase
+    .from("leads")
+    .update({ is_archived: archived })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error) throw new Error(archived ? "Failed to archive lead" : "Failed to restore lead");
+  return data as Lead;
 }
 
 /* ---------- helpers ---------- */

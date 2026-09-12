@@ -9,15 +9,15 @@ import { fetchInterns, internsQueryKey, leadsForIntern } from "@/lib/interns";
 export const Route = createFileRoute("/_authenticated/profile")({
   head: () => ({
     meta: [
-      { title: "Intern Profile — Pixel AI Intern CRM" },
+      { title: "Intern Profile — LeadNest Intern CRM" },
       {
         name: "description",
         content: "See how many leads each intern owns and how many follow-ups are due.",
       },
-      { property: "og:title", content: "Intern Profile — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Intern Profile — LeadNest Intern CRM" },
       {
         property: "og:description",
-        content: "Per-intern lead workload inside the Pixel AI Intern CRM.",
+        content: "Per-intern lead workload inside the LeadNest Intern CRM.",
       },
     ],
   }),

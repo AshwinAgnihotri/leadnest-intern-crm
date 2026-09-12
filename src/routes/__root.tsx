@@ -78,12 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Pixel AI Intern CRM" },
+      { title: "LeadNest Intern CRM" },
       {
         name: "description",
         content: "A simple lead CRM for interns: collect, track and follow up with business leads.",
       },
-      { property: "og:title", content: "Pixel AI Intern CRM" },
+      { property: "og:title", content: "LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "A simple lead CRM for interns: collect, track and follow up with business leads.",

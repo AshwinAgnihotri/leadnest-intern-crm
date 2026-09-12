@@ -68,12 +68,12 @@ export const Route = createFileRoute("/_authenticated/leads/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Leads — Pixel AI Intern CRM" },
+      { title: "Leads — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Browse, search and filter every business lead collected by the intern team.",
       },
-      { property: "og:title", content: "Leads — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Leads — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "A searchable table of all leads with quality, status and follow-up tracking.",

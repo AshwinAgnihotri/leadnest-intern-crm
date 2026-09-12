@@ -56,13 +56,13 @@ import { activitiesQueryKey, fetchActivities, formatTime } from "@/lib/activity"
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Pixel AI Intern CRM" },
+      { title: "Dashboard — LeadNest Intern CRM" },
       {
         name: "description",
         content:
-          "Track leads, follow-ups and conversions at a glance in the Pixel AI Intern CRM dashboard.",
+          "Track leads, follow-ups and conversions at a glance in the LeadNest Intern CRM dashboard.",
       },
-      { property: "og:title", content: "Dashboard — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Dashboard — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Lead statistics, recent leads and upcoming follow-ups for interns.",

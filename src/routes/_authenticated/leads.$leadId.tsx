@@ -48,12 +48,12 @@ import { useCurrentIntern } from "@/lib/current-intern";
 export const Route = createFileRoute("/_authenticated/leads/$leadId")({
   head: () => ({
     meta: [
-      { title: "Lead details — Pixel AI Intern CRM" },
+      { title: "Lead details — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Full company, contact and lead management details with follow-up actions.",
       },
-      { property: "og:title", content: "Lead details — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Lead details — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Review and update a single lead, mark it contacted and schedule follow-ups.",

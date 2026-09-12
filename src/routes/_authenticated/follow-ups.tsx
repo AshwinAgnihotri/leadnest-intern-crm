@@ -31,12 +31,12 @@ import { EmptyState } from "@/components/crm/EmptyState";
 export const Route = createFileRoute("/_authenticated/follow-ups")({
   head: () => ({
     meta: [
-      { title: "Follow-ups — Pixel AI Intern CRM" },
+      { title: "Follow-ups — LeadNest Intern CRM" },
       {
         name: "description",
         content: "See today's, upcoming and overdue lead follow-ups and mark leads as contacted.",
       },
-      { property: "og:title", content: "Follow-ups — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Follow-ups — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Stay on top of overdue and upcoming lead follow-ups.",

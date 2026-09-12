@@ -10,12 +10,12 @@ import { countByStatus, followUpSplit, formatMinutes, workingMinutes } from "@/l
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
     meta: [
-      { title: "Admin Overview — Pixel AI Intern CRM" },
+      { title: "Admin Overview — LeadNest Intern CRM" },
       {
         name: "description",
         content: "Company-wide CRM overview for admins and owners: interns, leads and follow-ups.",
       },
-      { property: "og:title", content: "Admin Overview — Pixel AI Intern CRM" },
+      { property: "og:title", content: "Admin Overview — LeadNest Intern CRM" },
       {
         property: "og:description",
         content: "Live totals across every intern, lead and follow-up in the CRM.",

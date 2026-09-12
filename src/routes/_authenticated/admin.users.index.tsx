@@ -46,7 +46,7 @@ export const Route = createFileRoute("/_authenticated/admin/users/")({
       { property: "og:title", content: "Admin · User Management — LeadNest Intern CRM" },
       {
         property: "og:description",
-        content: "Create and manage intern and admin accounts for the Pixel AI CRM.",
+        content: "Create and manage intern and admin accounts for the LeadNest Intern CRM.",
       },
     ],
   }),

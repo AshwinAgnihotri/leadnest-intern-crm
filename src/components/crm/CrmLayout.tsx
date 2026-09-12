@@ -31,7 +31,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <Command className="size-5" />
           </span>
           <span>
-            <span className="block text-base font-semibold">Pixel AI</span>
+            <span className="block text-base font-semibold">LeadNest</span>
             <span className="block text-[0.68rem] font-medium uppercase text-sidebar-foreground/45">Intern CRM</span>
           </span>
         </Link>

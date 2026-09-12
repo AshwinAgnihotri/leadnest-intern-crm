@@ -177,7 +177,7 @@ function DashboardPage() {
 
       <section className="mb-7 flex flex-col gap-5 rounded-xl border border-border/70 bg-card/55 p-5 shadow-[var(--shadow-card)] backdrop-blur-xl md:flex-row md:items-center md:justify-between md:p-7">
         <div>
-          <p className="crm-kicker">Today at Pixel AI</p>
+          <p className="crm-kicker">Today at LeadNest</p>
           <h2 className="mt-2 text-2xl font-semibold text-foreground md:text-3xl">
             {greeting}, {firstName} <span aria-hidden>👋</span>
           </h2>

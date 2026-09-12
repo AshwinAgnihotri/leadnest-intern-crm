@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Building2, CalendarDays, Contact, Pencil, Trash2, PhoneCall, Workflow } from "lucide-react";
+import { ArrowLeft, Archive, ArchiveRestore, Building2, CalendarDays, Contact, FileDown, Pencil, Trash2, PhoneCall, Workflow } from "lucide-react";
 import { toast } from "sonner";
 
 import { CrmLayout } from "@/components/crm/CrmLayout";
@@ -30,6 +30,7 @@ import {
 import {
   fetchLeads,
   deleteLead,
+  setLeadArchived,
   updateLead,
   leadsQueryKey,
   formatDate,
@@ -44,6 +45,8 @@ import { LeadNotes } from "@/components/crm/LeadNotes";
 import { activitiesQueryKey, logActivity, type ActivityAction } from "@/lib/activity";
 import { notificationsQueryKey, notify } from "@/lib/notifications";
 import { useCurrentIntern } from "@/lib/current-intern";
+import { fetchNotes, notesQueryKey } from "@/lib/notes";
+import { downloadLeadPdf } from "@/lib/lead-pdf";
 
 export const Route = createFileRoute("/_authenticated/leads/$leadId")({
   head: () => ({

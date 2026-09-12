@@ -54,6 +54,7 @@ import {
   type Lead,
 } from "@/lib/crm";
 import {
+  ARCHIVE_VIEWS,
   defaultFilters,
   matchesFilters,
   matchesSearch,
@@ -67,6 +68,7 @@ import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import { activitiesQueryKey, logActivity } from "@/lib/activity";
 import { useCurrentIntern } from "@/lib/current-intern";
 import { EmptyState } from "@/components/crm/EmptyState";
+import { downloadAllLeadsPdf } from "@/lib/lead-pdf";
 
 const searchSchema = z.object({
   q: fallback(z.string(), "").default(""),

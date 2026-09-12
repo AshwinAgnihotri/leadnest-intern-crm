@@ -115,6 +115,11 @@ export async function deleteLead(id: string): Promise<void> {
   if (error) throw new Error("Failed to delete lead");
 }
 
+/** Non-archived leads only — used by dashboard, follow-ups and intern views. */
+export function activeLeads(leads: Lead[]): Lead[] {
+  return leads.filter((l) => !l.is_archived);
+}
+
 export async function setLeadArchived(id: string, archived: boolean): Promise<Lead> {
   const { data, error } = await supabase
     .from("leads")

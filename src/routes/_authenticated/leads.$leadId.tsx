@@ -149,6 +149,30 @@ function LeadDetailsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const { data: leadNotes = [] } = useQuery({
+    queryKey: [...notesQueryKey, leadId],
+    queryFn: () => fetchNotes(leadId),
+  });
+
+  const archiveMutation = useMutation({
+    mutationFn: async (archived: boolean) => {
+      const saved = await setLeadArchived(leadId, archived);
+      await logActivity({
+        action: archived ? "Archive Lead" : "Restore Lead",
+        description: `${archived ? "Archived" : "Restored"} lead ${saved.company_name}`,
+        intern: currentIntern ?? null,
+        lead: saved,
+      });
+      return saved;
+    },
+    onSuccess: (saved) => {
+      queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      toast.success(saved.is_archived ? "Lead archived" : "Lead restored to active");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   const removeMutation = useMutation({
     mutationFn: async () => {
       if (lead) {

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { Search, Plus, Eye, Pencil, Trash2, Users } from "lucide-react";
+import { Search, Plus, Eye, Pencil, Trash2, Users, Archive, ArchiveRestore, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
@@ -33,8 +33,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   fetchLeads,
   deleteLead,
+  setLeadArchived,
   leadsQueryKey,
   formatDate,
   statusClass,

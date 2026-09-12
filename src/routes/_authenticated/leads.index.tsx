@@ -182,6 +182,24 @@ function LeadsPage() {
           />
         </div>
 
+        <Select
+          value={filters.archive}
+          onValueChange={(v) =>
+            setFilters({ ...filters, archive: v as LeadFilters["archive"] })
+          }
+        >
+          <SelectTrigger className="w-32" aria-label="Lead view">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {ARCHIVE_VIEWS.map((v) => (
+              <SelectItem key={v.value} value={v.value}>
+                {v.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         <LeadFilterBar
           filters={filters}
           onChange={setFilters}

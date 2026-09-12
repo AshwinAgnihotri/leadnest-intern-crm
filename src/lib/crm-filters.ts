@@ -200,6 +200,7 @@ export function activeFilterCount(f: LeadFilters): number {
   }
   if (resolveRange(f)) n += 1;
   if (f.fromTime || f.toTime) n += 1;
+  if (f.archive && f.archive !== "active") n += 1;
   return n;
 }
 

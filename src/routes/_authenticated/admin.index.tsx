@@ -52,15 +52,18 @@ function AdminOverview() {
   ];
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <p className="crm-kicker mb-3">Company at a glance</p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {cards.map((c) => (
-        <Card key={c.label}>
+        <Card key={c.label} className="crm-card-interactive">
           <CardContent className="p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{c.label}</p>
+            <p className="crm-kicker">{c.label}</p>
             <p className="mt-1 text-2xl font-semibold text-foreground">{c.value}</p>
           </CardContent>
         </Card>
       ))}
+      </div>
     </div>
   );
 }

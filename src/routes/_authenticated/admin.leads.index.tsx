@@ -109,7 +109,7 @@ function AdminLeads() {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="flex flex-wrap items-end gap-3 p-4">
           <div className="relative min-w-56 flex-1">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -273,7 +273,7 @@ function AdminLeads() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <Skeleton className="m-4 h-40" />
@@ -332,8 +332,9 @@ function AdminLeads() {
                   })}
                   {rows.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={14} className="py-8 text-center text-muted-foreground">
-                        No leads match these filters.
+                      <TableCell colSpan={14} className="py-14 text-center text-muted-foreground">
+                        <span className="block font-medium text-foreground">No matching leads</span>
+                        <span className="mt-1 block text-sm">Try widening the current filters.</span>
                       </TableCell>
                     </TableRow>
                   )}

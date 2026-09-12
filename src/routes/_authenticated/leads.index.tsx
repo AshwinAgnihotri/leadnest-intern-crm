@@ -339,7 +339,24 @@ function LeadsPage() {
                           <Button
                             variant="ghost"
                             size="icon"
+                            aria-label={lead.is_archived ? "Restore lead" : "Archive lead"}
+                            title={lead.is_archived ? "Restore lead" : "Archive lead"}
+                            disabled={archiveMutation.isPending}
+                            onClick={() =>
+                              archiveMutation.mutate({ lead, archived: !lead.is_archived })
+                            }
+                          >
+                            {lead.is_archived ? (
+                              <ArchiveRestore className="size-4 text-primary" />
+                            ) : (
+                              <Archive className="size-4 text-muted-foreground" />
+                            )}
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
                             aria-label="Delete lead"
+                            title="Delete lead"
                             onClick={() => setToDelete(lead)}
                           >
                             <Trash2 className="size-4 text-destructive" />
@@ -360,9 +377,10 @@ function LeadsPage() {
       <AlertDialog open={Boolean(toDelete)} onOpenChange={(o) => !o && setToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure to delete this Lead?</AlertDialogTitle>
             <AlertDialogDescription>
-              {toDelete?.company_name} ({toDelete?.lead_id}) will be permanently removed.
+              {toDelete?.company_name} ({toDelete?.lead_id}) will be permanently removed. Use
+              Archive instead if you only want to hide it from the active list.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

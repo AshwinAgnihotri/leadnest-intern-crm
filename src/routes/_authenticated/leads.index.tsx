@@ -135,6 +135,25 @@ function LeadsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
+  const archiveMutation = useMutation({
+    mutationFn: async ({ lead, archived }: { lead: Lead; archived: boolean }) => {
+      const saved = await setLeadArchived(lead.id, archived);
+      await logActivity({
+        action: archived ? "Archive Lead" : "Restore Lead",
+        description: `${archived ? "Archived" : "Restored"} lead ${lead.company_name}`,
+        intern: currentIntern ?? null,
+        lead: saved,
+      });
+      return saved;
+    },
+    onSuccess: (saved) => {
+      queryClient.invalidateQueries({ queryKey: leadsQueryKey });
+      queryClient.invalidateQueries({ queryKey: activitiesQueryKey });
+      toast.success(saved.is_archived ? "Lead archived" : "Lead restored to active");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
   const filtered = sortLeads(
     leads.filter((lead) => matchesSearch(lead, q) && matchesFilters(lead, filters)),
     sortField,

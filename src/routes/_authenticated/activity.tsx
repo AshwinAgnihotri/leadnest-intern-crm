@@ -129,7 +129,7 @@ function ActivityPage() {
 
   return (
     <CrmLayout title="Activity">
-      <Card className="mb-4">
+      <Card className="mb-4 overflow-hidden">
         <CardContent className="grid gap-3 pt-6 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-1.5">
             <Label>Intern</Label>
@@ -274,7 +274,7 @@ function ActivityPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="space-y-2 p-4">
@@ -282,9 +282,10 @@ function ActivityPage() {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : rows.length === 0 ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              No activity recorded yet.
-            </p>
+            <div className="crm-empty-state py-16">
+              <p className="font-medium text-foreground">No activity recorded yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">Updates will appear here as work is completed.</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>

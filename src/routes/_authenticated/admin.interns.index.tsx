@@ -98,7 +98,7 @@ function AdminInterns() {
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="flex flex-wrap items-end gap-3 p-4">
           <div className="relative min-w-56 flex-1">
             <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -138,7 +138,7 @@ function AdminInterns() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <Skeleton className="m-4 h-40" />
@@ -191,8 +191,9 @@ function AdminInterns() {
                   ))}
                   {rows.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={11} className="py-8 text-center text-muted-foreground">
-                        No interns match these filters.
+                      <TableCell colSpan={11} className="py-14 text-center text-muted-foreground">
+                        <span className="block font-medium text-foreground">No matching interns</span>
+                        <span className="mt-1 block text-sm">Try changing the search or status filter.</span>
                       </TableCell>
                     </TableRow>
                   )}

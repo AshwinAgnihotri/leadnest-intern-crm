@@ -118,7 +118,8 @@ function InternsPage() {
 
   return (
     <CrmLayout title="Interns">
-      <div className="mb-4 flex flex-wrap items-end gap-3">
+      <Card className="mb-4">
+        <CardContent className="flex flex-wrap items-end gap-3 p-4">
         <div className="relative min-w-56 flex-1">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -226,9 +227,10 @@ function InternsPage() {
           <Plus className="size-4" />
           Add Intern
         </Button>
-      </div>
+        </CardContent>
+      </Card>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
           {isLoading ? (
             <div className="space-y-2 p-4">
@@ -237,7 +239,10 @@ function InternsPage() {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : rows.length === 0 ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">No interns found</p>
+            <div className="crm-empty-state py-16">
+              <p className="font-medium text-foreground">No interns found</p>
+              <p className="mt-1 text-sm text-muted-foreground">Try changing the filters or add an intern.</p>
+            </div>
           ) : (
             <div className="overflow-x-auto">
               <Table>

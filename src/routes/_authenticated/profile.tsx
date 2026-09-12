@@ -30,13 +30,14 @@ function ProfilePage() {
 
   return (
     <CrmLayout title="Intern Profile">
+      <p className="crm-kicker mb-3">Personal workspace</p>
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader>
             <CardTitle className="text-base">Signed in as</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-4">
-            <div className="flex size-12 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
+            <div className="flex size-12 items-center justify-center rounded-full border border-primary/20 bg-accent text-sm font-semibold text-accent-foreground shadow-[var(--shadow-action)]">
               I1
             </div>
             <div>
@@ -46,7 +47,7 @@ function ProfilePage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="crm-card-interactive">
           <CardHeader>
             <CardTitle className="text-base">Team workload</CardTitle>
           </CardHeader>
@@ -54,7 +55,7 @@ function ProfilePage() {
             {interns.map((intern) => {
               const owned = leadsForIntern(leads, intern);
               return (
-                <div key={intern.id} className="flex items-center justify-between text-sm">
+                <div key={intern.id} className="flex items-center justify-between rounded-lg border border-border/60 px-3 py-2.5 text-sm">
                   <span>{intern.name}</span>
                   <span className="text-muted-foreground">
                     {owned.length} leads · {owned.filter(isFollowUpDue).length} due

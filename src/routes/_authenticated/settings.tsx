@@ -26,13 +26,13 @@ export const Route = createFileRoute("/_authenticated/settings")({
 
 function List({ title, items }: { title: string; items: string[] }) {
   return (
-    <Card>
+    <Card className="crm-card-interactive">
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-2">
         {items.map((i) => (
-          <span key={i} className="rounded-md bg-muted px-2.5 py-1 text-sm text-foreground">
+          <span key={i} className="rounded-md border border-border/70 bg-muted/60 px-2.5 py-1 text-sm text-foreground">
             {i}
           </span>
         ))}
@@ -48,7 +48,7 @@ function SettingsPage() {
   });
   return (
     <CrmLayout title="Settings">
-      <p className="mb-4 text-sm text-muted-foreground">
+      <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
         This MVP uses a fixed configuration. Sample leads are fictional demo data.
       </p>
       <div className="grid gap-4 md:grid-cols-2">

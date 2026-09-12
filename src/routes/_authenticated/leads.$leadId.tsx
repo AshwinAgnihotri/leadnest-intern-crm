@@ -238,6 +238,28 @@ function LeadDetailsPage() {
             <Pencil className="size-4" />
             Edit Lead
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              downloadLeadPdf(lead, leadNotes);
+              toast.success("Lead PDF downloaded");
+            }}
+          >
+            <FileDown className="size-4" />
+            Download PDF
+          </Button>
+          <Button
+            variant="outline"
+            disabled={archiveMutation.isPending}
+            onClick={() => archiveMutation.mutate(!lead.is_archived)}
+          >
+            {lead.is_archived ? (
+              <ArchiveRestore className="size-4" />
+            ) : (
+              <Archive className="size-4" />
+            )}
+            {lead.is_archived ? "Restore Lead" : "Archive Lead"}
+          </Button>
           <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
             <Trash2 className="size-4" />
             Delete Lead
@@ -401,9 +423,10 @@ function LeadDetailsPage() {
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this lead?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure to delete this Lead?</AlertDialogTitle>
             <AlertDialogDescription>
-              {lead.company_name} ({lead.lead_id}) will be permanently removed.
+              {lead.company_name} ({lead.lead_id}) will be permanently removed. Use Archive
+              instead if you only want to hide it from the active list.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

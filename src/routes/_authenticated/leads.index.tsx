@@ -218,6 +218,18 @@ function LeadsPage() {
         />
 
         <Button
+          variant="outline"
+          disabled={filtered.length === 0}
+          onClick={() => {
+            downloadAllLeadsPdf(filtered, "All leads export");
+            toast.success("Leads PDF downloaded");
+          }}
+        >
+          <FileDown className="size-4" />
+          Download All PDF
+        </Button>
+
+        <Button
           onClick={() => {
             setEditing(null);
             setFormOpen(true);

@@ -136,6 +136,7 @@ function FollowUpsPage() {
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
+    select: activeLeads,
   });
 
   const byBucket = (bucket: string) =>

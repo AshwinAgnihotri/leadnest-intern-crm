@@ -129,6 +129,7 @@ function DashboardPage() {
   const { data: leads = [], isLoading, isError } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
+    select: activeLeads,
   });
 
   const { data: interns = [] } = useQuery({

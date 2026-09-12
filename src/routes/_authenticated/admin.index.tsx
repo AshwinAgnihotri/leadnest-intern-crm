@@ -33,6 +33,7 @@ function AdminOverview() {
   const { data: leads = [], isLoading: ll } = useQuery({
     queryKey: leadsQueryKey,
     queryFn: fetchLeads,
+    select: activeLeads,
   });
 
   if (li || ll) return <Skeleton className="h-48 w-full" />;

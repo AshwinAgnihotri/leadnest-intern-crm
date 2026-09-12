@@ -135,6 +135,7 @@ export type Database = {
           id: string
           industry: string | null
           intern_id: string | null
+          is_archived: boolean
           last_contacted: string | null
           last_updated: string
           lead_id: string
@@ -156,6 +157,7 @@ export type Database = {
           id?: string
           industry?: string | null
           intern_id?: string | null
+          is_archived?: boolean
           last_contacted?: string | null
           last_updated?: string
           lead_id?: string
@@ -177,6 +179,7 @@ export type Database = {
           id?: string
           industry?: string | null
           intern_id?: string | null
+          is_archived?: boolean
           last_contacted?: string | null
           last_updated?: string
           lead_id?: string

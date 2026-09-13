@@ -95,6 +95,7 @@ export function LeadFormDialog({
   useEffect(() => {
     if (!open) return;
     setErrors({});
+    setCustomIndustry(null);
     if (lead) {
       const { id, lead_id, created_date, last_updated, ...rest } = lead;
       void id;

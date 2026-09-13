@@ -35,6 +35,7 @@ import {
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import {
   ANY,
+  ARCHIVE_VIEWS,
   DATE_FIELDS,
   DATE_PRESETS,
   SORT_FIELDS,

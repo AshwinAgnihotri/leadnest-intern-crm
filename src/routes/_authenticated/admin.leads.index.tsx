@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Search, Eye } from "lucide-react";
+import { Search, Eye, FileDown } from "lucide-react";
+import { downloadAllLeadsPdf } from "@/lib/lead-pdf";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ import {
 import { fetchInterns, internsQueryKey } from "@/lib/interns";
 import {
   ANY,
+  ARCHIVE_VIEWS,
   DATE_FIELDS,
   DATE_PRESETS,
   SORT_FIELDS,
@@ -135,6 +137,31 @@ function AdminLeads() {
               ))}
             </SelectContent>
           </Select>
+
+          <Select
+            value={filters.archive}
+            onValueChange={(v) => set("archive", v as typeof filters.archive)}
+          >
+            <SelectTrigger className="w-32" aria-label="Lead view">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ARCHIVE_VIEWS.map((v) => (
+                <SelectItem key={v.value} value={v.value}>
+                  {v.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Button
+            variant="outline"
+            disabled={rows.length === 0}
+            onClick={() => downloadAllLeadsPdf(rows, "Company-wide leads export")}
+          >
+            <FileDown className="size-4" />
+            Download All PDF
+          </Button>
 
           <Select value={filters.status} onValueChange={(v) => set("status", v)}>
             <SelectTrigger className="w-40" aria-label="Filter by status">

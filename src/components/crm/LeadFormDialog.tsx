@@ -82,6 +82,8 @@ export function LeadFormDialog({
 }) {
   const [form, setForm] = useState<LeadInput>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  // null = using a preset industry; string = custom industry text being edited
+  const [customIndustry, setCustomIndustry] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const isEdit = Boolean(lead);
   const { data: interns = [] } = useQuery({

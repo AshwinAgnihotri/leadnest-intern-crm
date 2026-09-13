@@ -162,6 +162,61 @@ export function LeadFormDialog({
   const set = (key: keyof LeadInput, value: string | null) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  // Industry: preset list, legacy values kept intact, plus a free-text "Custom Industry".
+  const savedIndustry = form.industry ?? "";
+  const industryChoice = customIndustry !== null
+    ? CUSTOM_INDUSTRY
+    : savedIndustry;
+  const industryOptions = [
+    ...INDUSTRIES,
+    ...(savedIndustry && !isPresetIndustry(savedIndustry) && customIndustry === null
+      ? [savedIndustry]
+      : []),
+  ];
+
+  const industryField = (
+    <div className="space-y-1.5">
+      <Label>Industry</Label>
+      <Select
+        {...(industryChoice ? { value: industryChoice } : {})}
+        onValueChange={(v) => {
+          if (v === CUSTOM_INDUSTRY) {
+            setCustomIndustry("");
+            set("industry", "");
+          } else {
+            setCustomIndustry(null);
+            set("industry", v);
+          }
+        }}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select industry" />
+        </SelectTrigger>
+        <SelectContent>
+          {industryOptions.map((o) => (
+            <SelectItem key={o} value={o}>
+              {o}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {customIndustry !== null && (
+        <div className="space-y-1.5 pt-1">
+          <Label htmlFor="custom_industry">Custom Industry Name</Label>
+          <Input
+            id="custom_industry"
+            value={customIndustry}
+            placeholder="e.g. Renewable Energy"
+            onChange={(e) => {
+              setCustomIndustry(e.target.value);
+              set("industry", e.target.value);
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+
   const field = (
     key: keyof LeadInput,
     label: string,
@@ -231,7 +286,7 @@ export function LeadFormDialog({
             {field("company_name", "Company name *")}
             {field("website", "Website", "text", "https://company.com")}
             {field("location", "Location", "text", "City, Country")}
-            {dropdown("industry", "Industry", INDUSTRIES)}
+            {industryField}
             </div>
           </section>
           <section className="space-y-3 rounded-xl border border-border/70 bg-background/30 p-4">

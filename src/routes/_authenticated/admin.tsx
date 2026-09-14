@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { ShieldAlert, LayoutDashboard, Users, Table2, UserCog } from "lucide-react";
 
+import { ChangePasswordDialog } from "@/components/crm/ChangePasswordDialog";
 import { CrmLayout } from "@/components/crm/CrmLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -52,6 +53,9 @@ function AdminLayout() {
 
   return (
     <CrmLayout title="Admin Panel">
+      <div className="mb-4 flex justify-end">
+        <ChangePasswordDialog />
+      </div>
       <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-border/70 bg-card/55 p-1.5 shadow-[var(--shadow-card)] backdrop-blur-xl">
         {tabs.map(({ to, label, icon: Icon, exact }) => {
           const active = exact ? pathname === to : pathname.startsWith(to);

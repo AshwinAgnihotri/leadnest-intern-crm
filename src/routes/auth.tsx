@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { signInIntern, signOutIntern, signUpIntern } from "@/lib/auth";
 import { fetchMyProfile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/crm/ThemeToggle";
 
 type SignInTab = "intern" | "admin";
 
@@ -112,6 +113,9 @@ function AuthPage() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10">
+      <div className="absolute right-4 top-4 z-10">
+        <ThemeToggle />
+      </div>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_15%,color-mix(in_oklab,var(--primary)_15%,transparent),transparent_30rem)]" />
       <Card className="crm-page-enter relative w-full max-w-[410px] overflow-hidden border-border/80 bg-card/90 shadow-[var(--shadow-float)]">
         <div className="h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />

@@ -12,6 +12,7 @@ import { initials, useCurrentIntern } from "@/lib/current-intern";
 import { signOutIntern } from "@/lib/auth";
 import { useMyProfile } from "@/lib/profile";
 import { useIsAdmin } from "@/lib/admin";
+import { ThemeToggle } from "@/components/crm/ThemeToggle";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -149,6 +150,7 @@ export function CrmLayout({ title, children }: { title: string; children: ReactN
           </form>
 
           <div className="ml-auto flex items-center gap-2 sm:ml-3">
+            <ThemeToggle />
             <NotificationBell />
             <div className="flex size-9 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-xs font-semibold text-primary">
               {initials(intern?.name)}

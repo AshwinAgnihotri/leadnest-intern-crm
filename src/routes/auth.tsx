@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Command, Eye, EyeOff, Loader2, ShieldCheck, UserRound } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Command, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -45,6 +45,46 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [adminAccessRevealed, setAdminAccessRevealed] = useState(false);
+  const secureWorkspaceClicks = useRef(0);
+  const secureWorkspaceStartedAt = useRef(0);
+  const secureWorkspaceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(
+    () => () => {
+      if (secureWorkspaceTimer.current) clearTimeout(secureWorkspaceTimer.current);
+    },
+    [],
+  );
+
+  function handleSecureWorkspaceClick() {
+    const now = Date.now();
+    const elapsed = now - secureWorkspaceStartedAt.current;
+
+    if (secureWorkspaceClicks.current === 0 || elapsed > 2000) {
+      if (secureWorkspaceTimer.current) clearTimeout(secureWorkspaceTimer.current);
+      secureWorkspaceStartedAt.current = now;
+      secureWorkspaceClicks.current = 1;
+      secureWorkspaceTimer.current = setTimeout(() => {
+        secureWorkspaceClicks.current = 0;
+        secureWorkspaceStartedAt.current = 0;
+        secureWorkspaceTimer.current = null;
+      }, 2000);
+      return;
+    }
+
+    secureWorkspaceClicks.current += 1;
+    if (secureWorkspaceClicks.current === 3) {
+      if (secureWorkspaceTimer.current) clearTimeout(secureWorkspaceTimer.current);
+      secureWorkspaceTimer.current = null;
+      secureWorkspaceClicks.current = 0;
+      secureWorkspaceStartedAt.current = 0;
+      setAdminAccessRevealed(true);
+      setMode("signin");
+      setTab("admin");
+      setError(null);
+    }
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -123,8 +163,14 @@ function AuthPage() {
           <div className="mb-3 flex size-12 items-center justify-center rounded-xl border border-primary/25 bg-primary/10 text-primary shadow-[var(--shadow-action)]">
             <Command className="size-6" />
           </div>
-          <p className="crm-kicker">Secure workspace</p>
-          <CardTitle className="text-xl">
+          <button
+            type="button"
+            onClick={handleSecureWorkspaceClick}
+            className="crm-kicker cursor-pointer bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+          >
+            Secure workspace
+          </button>
+          <CardTitle className={cn("text-xl", tab === "admin" && "crm-page-enter")}>
             {mode === "signin"
               ? tab === "admin"
                 ? "Admin sign in"
@@ -138,49 +184,19 @@ function AuthPage() {
           </p>
         </CardHeader>
         <CardContent className="pb-8">
-          {mode === "signin" && (
-            <div
-              role="tablist"
-              aria-label="Sign in options"
-              className="mb-6 grid grid-cols-2 gap-1 rounded-lg border border-border/60 bg-background/50 p-1"
+          {adminAccessRevealed && tab === "admin" && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="crm-page-enter mb-4 w-full text-muted-foreground"
+              onClick={() => {
+                setTab("intern");
+                setAdminAccessRevealed(false);
+                setError(null);
+              }}
             >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tab === "intern"}
-                onClick={() => {
-                  setTab("intern");
-                  setError(null);
-                }}
-                className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2.5 font-mono text-[0.7rem] font-medium uppercase transition-all",
-                  tab === "intern"
-                    ? "bg-accent text-primary shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <UserRound className="size-4" />
-                Intern Sign In
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tab === "admin"}
-                onClick={() => {
-                  setTab("admin");
-                  setError(null);
-                }}
-                className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-md px-3 py-2.5 font-mono text-[0.7rem] font-medium uppercase transition-all",
-                  tab === "admin"
-                    ? "bg-accent text-primary shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <ShieldCheck className="size-4" />
-                Admin Sign In
-              </button>
-            </div>
+              Return to Intern Sign In
+            </Button>
           )}
           <form className="space-y-4" onSubmit={submit}>
             {mode === "signup" && (
